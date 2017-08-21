@@ -67,7 +67,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override bool Read() {
 
             var reader = this.GetReader();
-            Check.Equals(reader.IsClosed, true);               
+            Equals(reader.IsClosed, true);               
             return reader.Read();
 
         }

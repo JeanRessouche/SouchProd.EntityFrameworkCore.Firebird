@@ -49,8 +49,8 @@ namespace Microsoft.EntityFrameworkCore
             Check.NotNull(connection, nameof(connection));
 
             var csb = new FbConnectionStringBuilder(connection.ConnectionString);
-
-            /*if (csb.AllowUserVariables != true || csb.BufferResultSets != true || csb.UseAffectedRows != false)
+            csb.ReturnRecordsAffected = false;/*
+            if (csb.AllowUserVariables != true || csb.BufferResultSets != true || csb.UseAffectedRows != false)
 	        {
 	            try
 	            {

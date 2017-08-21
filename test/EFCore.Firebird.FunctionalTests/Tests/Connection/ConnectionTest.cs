@@ -3,6 +3,7 @@ using FirebirdSql.Data.FirebirdClient;
 using SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models;
 using Xunit;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connection
 {
@@ -13,6 +14,65 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
         private static AppDb NewDbContext(bool reuseConnection)
         {
             return reuseConnection ? new AppDb(Connection) : new AppDb();
+        }
+
+        [Fact]
+        public void ContextCreation()
+        {
+            using (var db = NewDbContext(false))
+            {
+                db.Database.OpenConnection();
+                Assert.Equal("SouchProd.EntityFrameworkCore.Firebird", db.Database.ProviderName);
+            }
+        }
+
+        [Fact]
+        public void RawQueryExecute()
+        {
+            using (var db = NewDbContext(false))
+            {
+                var result = db.Database.ExecuteSqlCommand("Select count(*) from rdb$database");
+                Assert.Equal(0, result);
+            }
+        }
+
+        [Fact]
+        public void RawQueryRead()
+        {
+            using (var db = NewDbContext(false))
+            using (var command = db.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "Select count(*) from rdb$database";
+                db.Database.OpenConnection();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var i = reader.GetInt32(0);
+                        Assert.Equal(1, i);
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void SimpleRowReading()
+        {
+            using (var db = NewDbContext(false))
+            {
+                var blog = db.Blogs.Where(x=>x.Id>5).FirstOrDefault();
+                Assert.NotNull(blog);
+            }
+        }
+
+        [Fact]
+        public async void SimpleRowReadingAsync()
+        {
+            using (var db = NewDbContext(false))
+            {
+                var blog = await db.Blogs.FirstOrDefaultAsync();
+                Assert.NotNull(blog);
+            }
         }
 
         [Theory]
@@ -39,14 +99,5 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
             Assert.Equal(blog.Id, sameBlog.Id);
         }
 
-        [Fact]
-        public void SimpleRowReading()
-        {
-            using (var db = NewDbContext(false))
-            {
-                var blog = db.Blogs.FirstOrDefault();
-                Assert.NotNull(blog);
-            }                     
-        }
     }
 }

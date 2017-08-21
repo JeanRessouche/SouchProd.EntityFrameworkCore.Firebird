@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using FirebirdSql.Data.FirebirdClient;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -23,7 +24,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
         }
 
-	    protected override object Execute(
+        protected override object Execute(
             [NotNull] IRelationalConnection connection,
             DbCommandMethod executeMethod,
             [CanBeNull] IReadOnlyDictionary<string, object> parameterValues)
@@ -42,7 +43,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 		    return await ExecuteAsync(IOBehavior.Asynchronous, connection, executeMethod, parameterValues, cancellationToken).ConfigureAwait(false);
 	    }
 
-	    private async Task<object> ExecuteAsync(
+        private RelationalDataReader Rdr;
+        private WrappedFirebirdDataReader Wrp;
+        private DbCommand dbCommand;
+
+        private async Task<object> ExecuteAsync(
 		    IOBehavior ioBehavior,
 		    [NotNull] IRelationalConnection connection,
             DbCommandMethod executeMethod,
@@ -51,90 +56,98 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    {
             Check.NotNull(connection, nameof(connection));
 
-            using (var dbCommand = CreateCommand(connection, parameterValues))
-			{
-				var fbConnection = connection as FirebirdRelationalConnection;
-				object result;
-				var opened = false;
-				var commandId = Guid.NewGuid();
-				var startTime = DateTimeOffset.UtcNow;
-            	var stopwatch = Stopwatch.StartNew();
+            /*using (DbCommand */
+	        dbCommand = CreateCommand(connection, parameterValues);/*)*/
+            {
+                var fbConnection = connection as FirebirdRelationalConnection;
+                object result;
+                var opened = false;
+                var commandId = Guid.NewGuid();
+                var startTime = DateTimeOffset.UtcNow;
+                var stopwatch = Stopwatch.StartNew();
 
-				try
-				{
-					if (ioBehavior == IOBehavior.Asynchronous)
-						// ReSharper disable once PossibleNullReferenceException
-						await fbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
-					else
-						// ReSharper disable once PossibleNullReferenceException
-						fbConnection.Open();
-					opened = true;
+                try
+                {
+                    if (ioBehavior == IOBehavior.Asynchronous)
+                        // ReSharper disable once PossibleNullReferenceException
+                        await fbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    else
+                        // ReSharper disable once PossibleNullReferenceException
+                        fbConnection.Open();
 
-					switch (executeMethod)
-					{
-						case DbCommandMethod.ExecuteNonQuery:
-						{
-							result = ioBehavior == IOBehavior.Asynchronous ?
-								await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false) :
-								dbCommand.ExecuteNonQuery();
-							break;
-						}
-						case DbCommandMethod.ExecuteScalar:
-						{
-							result = ioBehavior == IOBehavior.Asynchronous ?
-								await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) :
-								dbCommand.ExecuteScalar();
-							break;
-						}
-						case DbCommandMethod.ExecuteReader:
-						{
-							var dataReader = ioBehavior == IOBehavior.Asynchronous ?
-								await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false) :
-								dbCommand.ExecuteReader();
-							result = new RelationalDataReader(connection, dbCommand, new WrappedFirebirdDataReader(dataReader), commandId, Logger);
-							break;
-						}
-						default:
-						{
-							throw new NotSupportedException();
-						}
-					}
-					
-					Logger.CommandExecuted(
-						dbCommand,
-						executeMethod,
-						commandId,
-						connection.ConnectionId,
-						result,
-						ioBehavior == IOBehavior.Asynchronous,
-						startTime,
-						stopwatch.Elapsed);
+                    opened = true;
 
-				}
-				catch (Exception exception)
-				{
-					Logger.CommandError(
-						dbCommand,
-						executeMethod,
-						commandId,
-						connection.ConnectionId,
-						exception,
-						ioBehavior == IOBehavior.Asynchronous,
-						startTime,
-						stopwatch.Elapsed);
-					
-					if (opened)
-						connection.Close();
-						
-					throw;
-				}
-				finally
-				{
-					dbCommand.Parameters.Clear();
-				}
+                    switch (executeMethod)
+                    {
+                        case DbCommandMethod.ExecuteNonQuery:
+                            {
+                                result = ioBehavior == IOBehavior.Asynchronous ?
+                                    await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false) :
+                                    dbCommand.ExecuteNonQuery();
+                                break;
+                            }
+                        case DbCommandMethod.ExecuteScalar:
+                            {
+                                result = ioBehavior == IOBehavior.Asynchronous ?
+                                    await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) :
+                                    dbCommand.ExecuteScalar();
+                                break;
+                            }
+                        case DbCommandMethod.ExecuteReader:
+                            {
+                                var dataReader = ioBehavior == IOBehavior.Asynchronous ?
+                                    await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false) :
+                                    dbCommand.ExecuteReader();
 
-				return result;
-			}
+                                Wrp = new WrappedFirebirdDataReader(dataReader);
+
+                                Rdr = new RelationalDataReader(connection, dbCommand, Wrp, commandId, Logger);
+
+                                result = Rdr;
+
+                                break;
+                            }
+                        default:
+                            {
+                                throw new NotSupportedException();
+                            }
+                    }
+
+                    Logger.CommandExecuted(
+                        dbCommand,
+                        executeMethod,
+                        commandId,
+                        connection.ConnectionId,
+                        result,
+                        ioBehavior == IOBehavior.Asynchronous,
+                        startTime,
+                        stopwatch.Elapsed);
+
+                }
+                catch (Exception exception)
+                {
+                    Logger.CommandError(
+                        dbCommand,
+                        executeMethod,
+                        commandId,
+                        connection.ConnectionId,
+                        exception,
+                        ioBehavior == IOBehavior.Asynchronous,
+                        startTime,
+                        stopwatch.Elapsed);
+
+                    if (opened)
+                        connection.Close();
+
+                    throw;
+                }
+                finally
+                {
+                    dbCommand.Parameters.Clear();
+                }
+
+                return result;
+            }
         }
 
         private DbCommand CreateCommand(

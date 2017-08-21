@@ -87,7 +87,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-
+            
 			// Shorten key length for Identity
 			modelBuilder.Entity<AppIdentityUser>(entity => {
 				entity.Property(m => m.Email).HasMaxLength(127);

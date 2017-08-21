@@ -14,13 +14,15 @@
     <RepositoryUrl>git://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</RepositoryUrl>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.9.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Pomelo.JsonObject" Version="1.1.1" />
+  </ItemGroup>  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FirebirdSql.Data.FirebirdClient\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient_NETSTANDARD16.csproj" />
   </ItemGroup>
 </Project>
