@@ -14,20 +14,19 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Xunit;
 using Microsoft.EntityFrameworkCore.Internal;
 using Moq;
-using MySql.Data.MySqlClient;
 
 namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 {
-    public class MigrationSqlGeneratorMySql55Test : MigrationSqlGeneratorTestBase
+    public class MigrationSqlGeneratorFirebird55Test : MigrationSqlGeneratorTestBase
     {
         protected override IMigrationsSqlGenerator SqlGenerator
         {
             get
             {
-                var mySqlOptions = new Mock<IMySqlOptions>();
-                mySqlOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
-                    new MySqlConnectionSettings(new MySqlConnectionStringBuilder(), new ServerVersion("5.5.2")));
-                mySqlOptions
+                var FirebirdOptions = new Mock<IFirebirdOptions>();
+                FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
+                    new FirebirdConnectionSettings(new FirebirdConnectionStringBuilder(), new ServerVersion("5.5.2")));
+                FirebirdOptions
                     .Setup(fn =>
                         fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Returns(@"
@@ -50,7 +49,7 @@ CREATE TABLE `People` (
 ");
                 
                 // type mapper
-                var typeMapper = new MySqlSmartTypeMapper(new RelationalTypeMapperDependencies(), mySqlOptions.Object);
+                var typeMapper = new FirebirdSmartTypeMapper(new RelationalTypeMapperDependencies(), FirebirdOptions.Object);
 
                 // migrationsSqlGeneratorDependencies
                 var commandBuilderFactory = new RelationalCommandBuilderFactory(
@@ -58,12 +57,12 @@ CREATE TABLE `People` (
                     typeMapper);
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
-                    new MySqlSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
+                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
                     typeMapper);
                 
-                return new MySqlMigrationsSqlGenerator(
+                return new FirebirdMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
-                    mySqlOptions.Object);
+                    FirebirdOptions.Object);
             }
         }
 

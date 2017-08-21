@@ -9,11 +9,11 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
 {
-    public class FirebirdIndexModelAnnotations
+    public class FirebirdDatabaseIndexAnnotations
     {
-        private readonly IndexModel _index;
+        private readonly DatabaseIndex _index;
 
-        public FirebirdIndexModelAnnotations(/* [NotNull] */ IndexModel index)
+        public FirebirdDatabaseIndexAnnotations(/* [NotNull] */ DatabaseIndex index)
         {
             // Check.NotNull(index, nameof(index));
 

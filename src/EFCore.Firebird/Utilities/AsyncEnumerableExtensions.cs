@@ -43,7 +43,7 @@ namespace System.Linq
                     _selector = enumerable._selector;
                 }
 
-                public async Task<bool> MoveNext(CancellationToken cancellationToken)
+                public async System.Threading.Tasks.Task<bool> MoveNext(System.Threading.CancellationToken cancellationToken)
                 {
                     if (!await _enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {

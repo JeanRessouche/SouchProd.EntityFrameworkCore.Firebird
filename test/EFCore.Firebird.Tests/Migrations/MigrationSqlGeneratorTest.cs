@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Xunit;
 using Microsoft.EntityFrameworkCore.Internal;
 using Moq;
-using MySql.Data.MySqlClient;
+using Firebird.Data.FirebirdClient;
 
 namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 {
@@ -25,7 +25,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             get
             {
                 // type mapper
-                var typeMapper = new MySqlTypeMapper(new RelationalTypeMapperDependencies());
+                var typeMapper = new FirebirdTypeMapper(new RelationalTypeMapperDependencies());
 
                 // migrationsSqlGeneratorDependencies
                 var commandBuilderFactory = new RelationalCommandBuilderFactory(
@@ -33,16 +33,16 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     typeMapper);
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
-                    new MySqlSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
+                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
                     typeMapper);
 
-                var mySqlOptions = new Mock<IMySqlOptions>();
-                mySqlOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
-                    new MySqlConnectionSettings(new MySqlConnectionStringBuilder(), new ServerVersion("5.7.18")));
+                var FirebirdOptions = new Mock<IFirebirdOptions>();
+                FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
+                    new FirebirdConnectionSettings(new FirebirdConnectionStringBuilder(), new ServerVersion("5.7.18")));
                 
-                return new MySqlMigrationsSqlGenerator(
+                return new FirebirdMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
-                    mySqlOptions.Object);
+                    FirebirdOptions.Object);
             }
         }
 
@@ -290,7 +290,7 @@ END;" + EOL +
 
         public virtual void CreateDatabaseOperation()
         {
-            Generate(new MySqlCreateDatabaseOperation { Name = "Northwind" });
+            Generate(new FirebirdCreateDatabaseOperation { Name = "Northwind" });
 
             Assert.Equal(
                 @"CREATE SCHEMA  `Northwind`;" + EOL,
@@ -450,7 +450,7 @@ END;" + EOL +
                     ClrType = typeof(int),
                     ColumnType = "char(38)",
                     IsNullable = false,
-                    [MySqlAnnotationNames.ValueGenerationStrategy] = MySqlValueGenerationStrategy.IdentityColumn
+                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                 });
 
             Assert.Equal(
@@ -510,7 +510,7 @@ END;" + EOL +
                 Table = "People",
                 Schema = "dbo",
                 Columns = new[] { "FirstName" },
-                //[MySqlAnnotationNames.Prefix + MySqlAnnotationNames.IndexMethod] = "gin"
+                //[FirebirdAnnotationNames.Prefix + FirebirdAnnotationNames.IndexMethod] = "gin"
             });
 
             Assert.Equal(
@@ -519,9 +519,9 @@ END;" + EOL +
         }
 
         [Fact]
-        public void CreateMySqlDatabase()
+        public void CreateFirebirdDatabase()
         {
-            Generate(new MySqlCreateDatabaseOperation
+            Generate(new FirebirdCreateDatabaseOperation
             {
                 Name = "hstore",
             });
@@ -541,7 +541,7 @@ END;" + EOL +
                 ClrType = typeof(int),
                 ColumnType = "int",
                 IsNullable = false,
-                [MySqlAnnotationNames.ValueGenerationStrategy] = MySqlValueGenerationStrategy.IdentityColumn
+                [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
             });
 
             Assert.Equal(
@@ -578,7 +578,7 @@ END;" + EOL +
                     Name = "foo",
                     ClrType = typeof(Guid),
                     ColumnType = "varchar(38)",
-                    [MySqlAnnotationNames.ValueGenerationStrategy] = MySqlValueGenerationStrategy.IdentityColumn
+                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                 });
 
             Assert.Equal(

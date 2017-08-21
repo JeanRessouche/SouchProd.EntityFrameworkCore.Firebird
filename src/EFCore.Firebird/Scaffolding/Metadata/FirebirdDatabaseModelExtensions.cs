@@ -4,10 +4,10 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
 {
     public static class FirebirdDatabaseModelExtensions
     {
-        public static FirebirdColumnModelAnnotations Firebird(/* [NotNull] */ this ColumnModel column)
-            => new FirebirdColumnModelAnnotations(column);
+        public static FirebirdDatabaseColumnAnnotations Firebird(/* [NotNull] */ this DatabaseColumn column)
+            => new FirebirdDatabaseColumnAnnotations(column);
 
-        public static FirebirdIndexModelAnnotations Firebird(/* [NotNull] */ this IndexModel index)
-            => new FirebirdIndexModelAnnotations(index);
+        public static FirebirdDatabaseIndexAnnotations Firebird(/* [NotNull] */ this DatabaseIndex index)
+            => new FirebirdDatabaseIndexAnnotations(index);
     }
 }

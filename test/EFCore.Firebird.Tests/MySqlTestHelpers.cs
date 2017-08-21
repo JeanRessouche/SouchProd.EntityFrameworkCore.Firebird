@@ -1,21 +1,20 @@
 using System;
-using System.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.EntityFrameworkCore
 {
-    public class MySqlTestHelpers : TestHelpers
+    public class FirebirdTestHelpers : TestHelpers
     {
-        protected MySqlTestHelpers()
+        protected FirebirdTestHelpers()
         {
         }
 
-        public static MySqlTestHelpers Instance { get; } = new MySqlTestHelpers();
+        public static FirebirdTestHelpers Instance { get; } = new FirebirdTestHelpers();
 
         public override IServiceCollection AddProviderServices(IServiceCollection services)
-            => services.AddEntityFrameworkMySql();
+            => services.AddEntityFrameworkFirebird();
 
         protected override void UseProviderOptions(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseMySql("Database=DummyDatabase");
+            => optionsBuilder.UseFirebird("Database=DummyDatabase");
     }
 }

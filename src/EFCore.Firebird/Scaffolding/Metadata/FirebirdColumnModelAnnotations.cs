@@ -10,11 +10,11 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
 {
-    public class FirebirdColumnModelAnnotations
+    public class FirebirdDatabaseColumnAnnotations
     {
-        private readonly ColumnModel _column;
+        private readonly DatabaseColumn _column;
 
-        public FirebirdColumnModelAnnotations(/* [NotNull] */ ColumnModel column)
+        public FirebirdDatabaseColumnAnnotations(/* [NotNull] */ DatabaseColumn column)
         {
             // Check.NotNull(column, nameof(column));
 
