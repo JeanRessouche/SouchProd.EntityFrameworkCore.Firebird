@@ -1,4 +1,4 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=travis-ci&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
 
 # SouchProd.EntityFrameworkCore.Firebird
 
