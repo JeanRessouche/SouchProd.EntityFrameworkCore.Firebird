@@ -17,7 +17,11 @@ before_install:
 
 script:
   - docker exec -it dotnet sh -c 'cd /dotnet && dotnet restore'
-  - docker exec -it dotnet sh -c 'cd /dotnet/test/EFCore.firebird.Tests && dotnet test -c Release'
+  - docker exec -it dotnet sh -c 'cd /dotnet/test/EFCore.Firebird.Tests && dotnet test -c Release'
 
 notifications:
-  email: false
+    email:
+        recipients:
+            - jean.ressouche@souchprod.com
+        on_success: always
+        on_failure: always
