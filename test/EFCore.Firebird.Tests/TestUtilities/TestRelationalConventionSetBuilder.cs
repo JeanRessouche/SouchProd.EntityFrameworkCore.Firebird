@@ -4,6 +4,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 namespace Microsoft.EntityFrameworkCore.TestUtilities
 {
@@ -15,9 +16,15 @@ namespace Microsoft.EntityFrameworkCore.TestUtilities
         }
 
         public static ConventionSet Build()
-            => new TestRelationalConventionSetBuilder(
+        {
+            var sqlServerTypeMapper = new FirebirdTypeMapper(new RelationalTypeMapperDependencies());
+            return new TestRelationalConventionSetBuilder(
                     new RelationalConventionSetBuilderDependencies(
                         new TestRelationalTypeMapper(new RelationalTypeMapperDependencies()), null, null))
-                .AddConventions(new CoreConventionSetBuilder(new CoreConventionSetBuilderDependencies(new CoreTypeMapper())).CreateConventionSet());
+                .AddConventions(
+                    new CoreConventionSetBuilder(new CoreConventionSetBuilderDependencies(sqlServerTypeMapper))
+                        .CreateConventionSet());
+        }
     }
+
 }

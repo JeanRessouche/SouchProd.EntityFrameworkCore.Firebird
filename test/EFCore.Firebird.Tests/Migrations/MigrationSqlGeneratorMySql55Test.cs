@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -25,7 +26,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             {
                 var FirebirdOptions = new Mock<IFirebirdOptions>();
                 FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
-                    new FirebirdConnectionSettings(new FirebirdConnectionStringBuilder(), new ServerVersion("5.5.2")));
+                    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("5.5.2")));
                 FirebirdOptions
                     .Setup(fn =>
                         fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
