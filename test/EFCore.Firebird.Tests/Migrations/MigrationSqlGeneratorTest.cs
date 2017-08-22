@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Xunit;
 using Microsoft.EntityFrameworkCore.Internal;
 using Moq;
-using Firebird.Data.FirebirdClient;
 
 namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 {

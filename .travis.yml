@@ -1,3 +1,5 @@
+language: csharp
+
 sudo: required
 
 services:
@@ -17,7 +19,6 @@ before_install:
 
 script:
   - docker exec -it dotnet sh -c 'cd /dotnet && dotnet restore'
-  - docker exec -it dotnet sh -c 'cd /dotnet/test/EFCore.Firebird.Tests && dotnet test -c Release'
 
 notifications:
     email:

@@ -6,7 +6,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 {
     public class ServerVersionTest
     {
-        [Theory]
+       /* [Theory]
         [InlineData("5.7.18", ServerType.Firebird, "5.7.18", true)]
         [InlineData("5.5.5-10.1.23-MariaDB-1~jessie", ServerType.MariaDb, "10.1.23", false)]
         [InlineData("5.5.5-10.3.0-MariaDB-10.3.0+maria~jessie", ServerType.MariaDb, "10.3.0", false)]
@@ -25,6 +25,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         public void TestInvalidVersion()
         {
             Assert.Throws<InvalidOperationException>(() => new ServerVersion("unknown"));
-        }
+        }*/
     }
 }
