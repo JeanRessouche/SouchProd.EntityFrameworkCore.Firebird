@@ -1,0 +1,23 @@
+sudo: required
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+    - release
+    - dev
+    - /^.*-wip$/
+    - /^(.*\/)?ci-.*$/
+
+before_install:
+  - docker run -d --name firebird -p 3050:3050 almeida/firebird
+  - docker run -v $(pwd):/dotnet/:rw -e 'CI=True' --name dotnet --link firebird:firebird -d microsoft/dotnet:2.0.0-sdk sh -c 'while true; do sleep 0.1; done'
+
+script:
+  - docker exec -it dotnet sh -c 'cd /dotnet && dotnet restore'
+  - docker exec -it dotnet sh -c 'cd /dotnet/test/EFCore.firebird.Tests && dotnet test -c Release'
+
+notifications:
+  email: false
