@@ -76,9 +76,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private IRelationalCommand CreateHasTablesCommand()
             => _rawSqlCommandBuilder
                 .Build(@"
-                    SELECT CASE WHEN COUNT(*) = 0 THEN FALSE ELSE TRUE END
-                    FROM information_schema.tables
-                    WHERE table_type = 'BASE TABLE' AND table_schema = '" + _connection.DbConnection.Database + "'");
+select
+    CASE WHEN COUNT(*) = 0 THEN 0 ELSE 1 END
+from
+    rdb$relations
+where
+    rdb$view_blr is null and (rdb$system_flag is null or rdb$system_flag = 0)");
 
         private IReadOnlyList<MigrationCommand> CreateCreateOperations()
         {

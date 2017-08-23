@@ -88,7 +88,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetTablesQuery = @"SHOW FULL TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+        const string GetTablesQuery = @"select rdb$relation_name from rdb$relations where rdb$view_blr is null and (rdb$system_flag is null or rdb$system_flag = 0)";
 
         void GetTables()
         {
@@ -112,7 +112,52 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetColumnsQuery = @"SHOW COLUMNS FROM {0}";
+        const string GetColumnsQuery = @"SELECT
+  RF.RDB$FIELD_NAME as Field,
+  CASE F.RDB$FIELD_TYPE
+    WHEN 7 THEN
+      CASE F.RDB$FIELD_SUB_TYPE
+        WHEN 0 THEN 'SMALLINT'
+        WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
+        WHEN 2 THEN 'DECIMAL'
+      END
+    WHEN 8 THEN
+      CASE F.RDB$FIELD_SUB_TYPE
+        WHEN 0 THEN 'INTEGER'
+        WHEN 1 THEN 'NUMERIC('  || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
+        WHEN 2 THEN 'DECIMAL'
+      END
+    WHEN 9 THEN 'QUAD'
+    WHEN 10 THEN 'FLOAT'
+    WHEN 12 THEN 'DATE'
+    WHEN 13 THEN 'TIME'
+    WHEN 14 THEN 'CHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ') '
+    WHEN 16 THEN
+      CASE F.RDB$FIELD_SUB_TYPE
+        WHEN 0 THEN 'BIGINT'
+        WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
+        WHEN 2 THEN 'DECIMAL'
+      END
+    WHEN 27 THEN 'DOUBLE'
+    WHEN 35 THEN 'TIMESTAMP'
+    WHEN 37 THEN 'VARCHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ')'
+    WHEN 40 THEN 'CSTRING' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ')'
+    WHEN 45 THEN 'BLOB_ID'
+    WHEN 261 THEN 'BLOB SUB_TYPE ' || F.RDB$FIELD_SUB_TYPE
+    ELSE 'RDB$FIELD_TYPE: ' || F.RDB$FIELD_TYPE || '?'
+  END as Type,
+  IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, 'YES', 'NO') as " + "\"" + @"Null"+ "\"" + @",
+        COALESCE(RF.RDB$DEFAULT_SOURCE, F.RDB$DEFAULT_SOURCE) as " + "\"" + @"Default" + "\"" + @"
+        FROM
+            RDB$RELATION_FIELDS RF
+        JOIN
+            RDB$FIELDS F ON(F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE)
+        LEFT OUTER JOIN
+            RDB$CHARACTER_SETS CH ON(CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
+        WHERE
+            (RF.RDB$RELATION_NAME = {0}) AND(COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0)
+        ORDER BY
+        RF.RDB$FIELD_POSITION;";
 
         void GetColumns()
         {
@@ -128,22 +173,26 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
                             Name = reader.GetString(0),
                             StoreType = reader.GetString(1),
                             IsNullable = reader.GetString(2) == "YES",
-                            DefaultValueSql = reader[4].ToString() == "" ? null : reader[4].ToString(),
+                            DefaultValueSql = reader[3].ToString() == "" ? null : reader[3].ToString(),
                         };
                         x.Value.Columns.Add(column);
                     }
             }
         }
 
-        const string GetPrimaryQuery = @"SELECT `INDEX_NAME`, 
-             `NON_UNIQUE`, 
-             GROUP_CONCAT(`COLUMN_NAME` ORDER BY `SEQ_IN_INDEX` SEPARATOR ',') AS COLUMNS
-             FROM `INFORMATION_SCHEMA`.`STATISTICS`
-             WHERE `TABLE_SCHEMA` = '{0}'
-             AND `TABLE_NAME` = '{1}'
-             AND `INDEX_NAME` = 'PRIMARY'
-             GROUP BY `INDEX_NAME`, `NON_UNIQUE`;";
-        
+        const string GetPrimaryQuery = @"
+select
+    I.rdb$index_name as Index_Name,
+    I.rdb$unique_flag as Non_Unique,
+    I.rdb$relation_name as Columns
+from
+    RDB$INDICES I
+where
+   I.rdb$relation_name = {0}
+   and I.rdb$index_name like 'PK_%'
+group by
+   Index_Name, Non_Unique, Columns";
+
         /// <remarks>
         /// Primary keys are handled as in <see cref="GetConstraints"/>, not here
         /// </remarks>
@@ -151,7 +200,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
         {
             foreach (var x in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetPrimaryQuery, _connection.Database, x.Key.Replace("`", "")), _connection))
+                using (var command = new FbCommand(string.Format(GetPrimaryQuery, x.Key.Replace("`", "")), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
@@ -175,14 +224,19 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetIndexesQuery = @"SELECT INDEX_NAME, 
-     NON_UNIQUE, 
-     GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX SEPARATOR ',') AS COLUMNS
-     FROM INFORMATION_SCHEMA.STATISTICS
-     WHERE TABLE_SCHEMA = '{0}'
-     AND TABLE_NAME = '{1}'
-     AND INDEX_NAME <> 'PRIMARY'
-     GROUP BY INDEX_NAME, NON_UNIQUE;";
+        const string GetIndexesQuery = @"
+select
+    I.rdb$index_name as Index_Name,
+    I.rdb$unique_flag as Non_Unique,
+    I.rdb$relation_name as Columns
+from
+    RDB$INDICES I
+where
+   I.rdb$relation_name = {0}
+   and I.rdb$index_name not like 'PK_%'
+   and I.rdb$index_name not like 'FK_%'
+group by
+   Index_Name, Non_Unique, Columns";
 
         /// <remarks>
         /// Primary keys are handled as in <see cref="GetConstraints"/>, not here
@@ -191,7 +245,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
         {
             foreach (var x in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetIndexesQuery, _connection.Database, x.Key), _connection))
+                using (var command = new FbCommand(string.Format(GetIndexesQuery, x.Key), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
@@ -216,38 +270,41 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetConstraintsQuery = @"SELECT CONSTRAINT_SCHEMA, 
- 	CONSTRAINT_NAME, 
- 	TABLE_NAME, 
- 	COLUMN_NAME, 
- 	REFERENCED_TABLE_NAME, 
- 	REFERENCED_COLUMN_NAME, 
- 	(SELECT DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE REFERENTIAL_CONSTRAINTS.CONSTRAINT_NAME = KEY_COLUMN_USAGE.CONSTRAINT_NAME) AS DELETE_RULE
- FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
- WHERE CONSTRAINT_SCHEMA = '{0}' 
- 		AND TABLE_SCHEMA = '{0}' 
- 		AND TABLE_NAME = '{1}' 
- 		AND CONSTRAINT_NAME <> 'PRIMARY'
-         AND REFERENCED_TABLE_NAME IS NOT NULL";
+        const string GetConstraintsQuery = @"SELECT
+    master_index_segments.rdb$index_name as CONSTRAINT_NAME,
+    detail_relation_constraints.RDB$RELATION_NAME as SRC_TABLE_NAME,
+    detail_index_segments.rdb$field_name AS SRC_COLUMN_NAME,
+    master_relation_constraints.rdb$relation_name AS REFERENCED_TABLE_NAME,
+    master_index_segments.rdb$field_name AS fk_field,
+    rdb$ref_constraints.RDB$DELETE_RULE as Delete_Rule
+FROM
+    rdb$relation_constraints detail_relation_constraints
+    JOIN rdb$index_segments detail_index_segments ON detail_relation_constraints.rdb$index_name = detail_index_segments.rdb$index_name 
+    JOIN rdb$ref_constraints ON detail_relation_constraints.rdb$constraint_name = rdb$ref_constraints.rdb$constraint_name -- Master indeksas
+    JOIN rdb$relation_constraints master_relation_constraints ON rdb$ref_constraints.rdb$const_name_uq = master_relation_constraints.rdb$constraint_name
+    JOIN rdb$index_segments master_index_segments ON master_relation_constraints.rdb$index_name = master_index_segments.rdb$index_name
+WHERE
+    detail_relation_constraints.rdb$constraint_type = 'FOREIGN KEY'
+    AND detail_relation_constraints.RDB$RELATION_NAME = {0}";
 
         void GetConstraints()
         {
             foreach (var x in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetConstraintsQuery, _connection.Database, x.Key), _connection))
+                using (var command = new FbCommand(string.Format(GetConstraintsQuery, x.Key), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
-                        if (_tables.ContainsKey($"{ reader.GetString(4) }"))
+                        if (_tables.ContainsKey($"{ reader.GetString(3) }"))
                         {
                             var fkInfo = new DatabaseForeignKey
                             {
-                                Name = reader.GetString(1),
-                                OnDelete = ConvertToReferentialAction(reader.GetString(6)),
+                                Name = reader.GetString(0),
+                                OnDelete = ConvertToReferentialAction(reader.GetString(5)),
                                 Table = x.Value,
-                                PrincipalTable = _tables[$"{ reader.GetString(4) }"]
+                                PrincipalTable = _tables[$"{ reader.GetString(3) }"]
                             };
-                            fkInfo.Columns.Add(x.Value.Columns.Single(y => y.Name == reader.GetString(3)));
+                            fkInfo.Columns.Add(x.Value.Columns.Single(y => y.Name == reader.GetString(2)));
                             x.Value.ForeignKeys.Add(fkInfo);
                         }
                         else
@@ -261,8 +318,8 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
         {
             switch (onDeleteAction.ToUpperInvariant())
             {
-                case "RESTRICT":
-                    return ReferentialAction.Restrict;
+                case "SET DEFAUT":
+                    return ReferentialAction.Restrict; // TODO
 
                 case "CASCADE":
                     return ReferentialAction.Cascade;

@@ -18,7 +18,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private static readonly FirebirdDateTimeTypeMapping DateTime             = new FirebirdDateTimeTypeMapping("datetime", DbType.DateTime);
         private static readonly FirebirdDateTimeOffsetTypeMapping DateTimeOffset = new FirebirdDateTimeOffsetTypeMapping("datetime", DbType.DateTime);
         private static readonly TimeSpanTypeMapping Time                 = new TimeSpanTypeMapping("time", DbType.Time);
-        private static readonly GuidTypeMapping OldGuid                  = new GuidTypeMapping("binary(16)", DbType.Guid);
+        private static readonly GuidTypeMapping Guid                  = new GuidTypeMapping("varchar(36)", DbType.Guid);
 
         private readonly IFirebirdOptions _options;
 
@@ -51,14 +51,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         protected virtual RelationalTypeMapping MaybeConvertMapping(RelationalTypeMapping mapping)
         {
-            // OldGuids
-            if (_options.ConnectionSettings.OldGuids)
-            {
-                if (mapping.StoreType == "binary(16)" && mapping.ClrType == typeof(byte[]))
-                    return OldGuid;
-                if (mapping.StoreType == "char(36)" && mapping.ClrType == typeof(Guid))
-                    return OldGuid;
-            }
+            if (mapping.StoreType == "varchar(36)" && mapping.ClrType == typeof(Guid))
+                return Guid;
 
             // SupportsDateTime6
             if (!_options.ConnectionSettings.ServerVersion.SupportsDateTime6)

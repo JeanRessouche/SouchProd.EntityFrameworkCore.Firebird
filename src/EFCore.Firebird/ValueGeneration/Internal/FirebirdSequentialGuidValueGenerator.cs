@@ -32,7 +32,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
             Rng.GetBytes(randomBytes);
             var ticks = (ulong) DateTime.UtcNow.Ticks;
 
-            if (_options.ConnectionSettings.OldGuids)
+            /*if (_options.ConnectionSettings.OldGuids)
             {
                 var guidBytes = new byte[16];
                 var tickBytes = BitConverter.GetBytes(ticks);
@@ -43,7 +43,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
                 Buffer.BlockCopy(randomBytes, 0, guidBytes, 8, 8);
 
                 return new Guid(guidBytes);
-            }
+            }*/
 
             var guid = new Guid((uint) (ticks >> 32), (ushort) (ticks << 32 >> 48), (ushort) (ticks << 48 >> 48),
                 randomBytes[0],

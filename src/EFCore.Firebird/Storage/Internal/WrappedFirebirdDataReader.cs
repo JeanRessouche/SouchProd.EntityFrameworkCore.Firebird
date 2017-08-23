@@ -26,10 +26,16 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         }
 
         public override bool GetBoolean(int ordinal) => GetReader().GetBoolean(ordinal);
-	    public override byte GetByte(int ordinal) => GetReader().GetByte(ordinal);
-	    public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length) => GetReader().GetBytes(ordinal, dataOffset, buffer, bufferOffset, length);
-	    public override char GetChar(int ordinal) => Convert.ToChar(GetReader().GetByte(ordinal));
-	    public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length) => GetReader().GetChars(ordinal, dataOffset, buffer, bufferOffset, length);
+        public override byte GetByte(int ordinal) => GetReader().GetByte(ordinal);
+
+        public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length) =>
+            GetReader().GetBytes(ordinal, dataOffset, buffer, bufferOffset, length);
+
+        public override char GetChar(int ordinal) => Convert.ToChar(GetReader().GetByte(ordinal));
+
+        public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length) =>
+            GetReader().GetChars(ordinal, dataOffset, buffer, bufferOffset, length);
+
         public override string GetDataTypeName(int ordinal) => GetReader().GetDataTypeName(ordinal);
         public override DateTime GetDateTime(int ordinal) => GetReader().GetDateTime(ordinal);
         public override decimal GetDecimal(int ordinal) => GetReader().GetDecimal(ordinal);
@@ -49,7 +55,15 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override int FieldCount => GetReader().FieldCount;
         public override object this[int ordinal] => GetReader()[ordinal];
         public override object this[string name] => GetReader()[name];
-        public override int RecordsAffected => GetReader().RecordsAffected;
+
+        public override int RecordsAffected {
+            get
+            {
+                var n = GetReader().RecordsAffected;
+                return n;
+            }
+        }
+
         public override bool HasRows => GetReader().HasRows;
         public override bool IsClosed => _reader == null || _reader.IsClosed;
         public override int Depth => GetReader().Depth;

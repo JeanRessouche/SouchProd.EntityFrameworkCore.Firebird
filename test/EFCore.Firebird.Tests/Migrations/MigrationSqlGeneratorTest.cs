@@ -38,7 +38,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 
                 var FirebirdOptions = new Mock<IFirebirdOptions>();
                 FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
-                    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("5.7.18")));
+                    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("2.1")));
                 
                 return new FirebirdMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
@@ -302,10 +302,10 @@ END;" + EOL +
             base.CreateTableOperation();
 
             Assert.Equal(
-                "CREATE TABLE `dbo`.`People` (" + EOL +
-                "    `Id` int NOT NULL," + EOL +
-                "    `EmployerId` int," + EOL +
-                "    `SSN` char(11)," + EOL +
+                "CREATE TABLE `People` (" + EOL +
+                "    `Id` integer NOT NULL," + EOL +
+                "    `EmployerId` integer," + EOL +
+                "    `SSN` varchar(11)," + EOL +
                 "    PRIMARY KEY (`Id`)," + EOL +
                 "    UNIQUE (`SSN`)," + EOL +
                 "    FOREIGN KEY (`EmployerId`) REFERENCES `Companies` (`Id`)" + EOL +
@@ -508,7 +508,7 @@ END;" + EOL +
             {
                 Name = "IX_People_Name",
                 Table = "People",
-                Schema = "dbo",
+                Schema = "", // "dbo",
                 Columns = new[] { "FirstName" },
                 //[FirebirdAnnotationNames.Prefix + FirebirdAnnotationNames.IndexMethod] = "gin"
             });
@@ -527,7 +527,7 @@ END;" + EOL +
             });
 
             Assert.Equal(
-                @"CREATE SCHEMA `hstore`" + EOL,
+                @"CREATE DATABASE hstore" + EOL,
                 Sql);
         }
 

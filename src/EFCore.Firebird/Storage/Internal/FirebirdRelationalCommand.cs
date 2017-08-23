@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
@@ -77,6 +78,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
                     opened = true;
 
+                   /* if (dbCommand.CommandText.ToUpper().Contains("INSERT ") && dbCommand.CommandText.ToUpper().Contains(" RETURNING "))
+                    {
+                        executeMethod = DbCommandMethod.ExecuteScalar;
+                    }*/
+
                     switch (executeMethod)
                     {
                         case DbCommandMethod.ExecuteNonQuery:
@@ -88,6 +94,19 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                             }
                         case DbCommandMethod.ExecuteScalar:
                             {
+                                if (dbCommand.CommandText.ToUpper().Contains("INSERT ") &&
+                                    dbCommand.CommandText.ToUpper().Contains(" RETURNING "))
+                                {
+                                    /*var lastInsertedInParam =
+                                        new DbParameter("Id", FbDbType.BigInt);
+                                    dbCommand.Parameters.Add(lastInsertedInParam);
+                                    var idParam = dbCommand.Parameters["Id"];
+                                    idParam.Direction = ParameterDirection.Output;
+                                    Debug.WriteLine(idParam.Value.ToString());*/
+                                    // dbCommand.CommandText
+                                    // Parameters.Add("empID", SqlDbType.BigInt).Direction = ParameterDirection.Output;
+                                }
+
                                 result = ioBehavior == IOBehavior.Asynchronous ?
                                     await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) :
                                     dbCommand.ExecuteScalar();
@@ -194,7 +213,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	                    }
 	                    else
 	                    {
-		                    parameter.AddDbParameter(command, parameterValue);
+                            parameter.AddDbParameter(command, parameterValue);
 	                    }
                     }
                     else

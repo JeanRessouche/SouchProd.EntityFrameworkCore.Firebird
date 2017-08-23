@@ -20,46 +20,46 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly FirebirdBoolTypeMapping _bit          = new FirebirdBoolTypeMapping("bit", DbType.Boolean);
 
         // integers
-        private readonly SByteTypeMapping _tinyint          = new SByteTypeMapping("tinyint", DbType.SByte);
-        private readonly ByteTypeMapping _utinyint          = new ByteTypeMapping("tinyint unsigned", DbType.Byte);
+        private readonly SByteTypeMapping _tinyint          = new SByteTypeMapping("smallint", DbType.SByte);
+        private readonly ByteTypeMapping _utinyint          = new ByteTypeMapping("smallint", DbType.Byte);
 	    private readonly ShortTypeMapping _smallint         = new ShortTypeMapping("smallint", DbType.Int16);
-	    private readonly UShortTypeMapping _usmallint       = new UShortTypeMapping("smallint unsigned", DbType.UInt16);
-        private readonly IntTypeMapping _int                = new IntTypeMapping("int", DbType.Int32);
-	    private readonly UIntTypeMapping _uint              = new UIntTypeMapping("int unsigned", DbType.UInt32);
+	    private readonly UShortTypeMapping _usmallint       = new UShortTypeMapping("smallint", DbType.UInt16);
+        private readonly IntTypeMapping _int                = new IntTypeMapping("integer", DbType.Int32);
+	    private readonly UIntTypeMapping _uint              = new UIntTypeMapping("integer", DbType.UInt32);
 	    private readonly LongTypeMapping _bigint            = new LongTypeMapping("bigint", DbType.Int64);
-	    private readonly ULongTypeMapping _ubigint          = new ULongTypeMapping("bigint unsigned", DbType.UInt64);
+	    private readonly ULongTypeMapping _ubigint          = new ULongTypeMapping("bigint", DbType.UInt64);
 
 	    // decimals
 	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(65, 30)", DbType.Decimal);
-	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("double", DbType.Double);
+	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
         private readonly FloatTypeMapping _float            = new FloatTypeMapping("float");
 
 	    // binary
-	    private readonly RelationalTypeMapping _binary           = new FirebirdByteArrayTypeMapping("binary", DbType.Binary);
-        private readonly RelationalTypeMapping _varbinary        = new FirebirdByteArrayTypeMapping("varbinary", DbType.Binary);
-	    private readonly FirebirdByteArrayTypeMapping _varbinary767 = new FirebirdByteArrayTypeMapping("varbinary(767)", DbType.Binary, 767);
-	    private readonly RelationalTypeMapping _varbinarymax     = new FirebirdByteArrayTypeMapping("longblob", DbType.Binary);
+	    private readonly RelationalTypeMapping _binary           = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
+        private readonly RelationalTypeMapping _varbinary        = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
+	    private readonly FirebirdByteArrayTypeMapping _varbinary767 = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 767", DbType.Binary, 767);
+	    private readonly RelationalTypeMapping _varbinarymax     = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 16384", DbType.Binary);
 
 	    // string
         private readonly FirebirdStringTypeMapping _char            = new FirebirdStringTypeMapping("char", DbType.AnsiStringFixedLength);
         private readonly FirebirdStringTypeMapping _varchar         = new FirebirdStringTypeMapping("varchar", DbType.AnsiString);
 	    private readonly FirebirdStringTypeMapping _varchar127      = new FirebirdStringTypeMapping("varchar(127)", DbType.AnsiString, true, 127);
-	    private readonly FirebirdStringTypeMapping _varcharmax      = new FirebirdStringTypeMapping("longtext", DbType.AnsiString);
+	    private readonly FirebirdStringTypeMapping _varcharmax      = new FirebirdStringTypeMapping("varchar(4000)", DbType.AnsiString);
 
 	    // DateTime
-        private readonly FirebirdDateTimeTypeMapping _dateTime6              = new FirebirdDateTimeTypeMapping("datetime(6)", DbType.DateTime);
-        private readonly FirebirdDateTimeOffsetTypeMapping _dateTimeOffset6  = new FirebirdDateTimeOffsetTypeMapping("datetime(6)", DbType.DateTime);
-        private readonly FirebirdDateTimeOffsetTypeMapping _timeStamp6 = new FirebirdDateTimeOffsetTypeMapping("timestamp(6)", DbType.DateTime);
-        private readonly TimeSpanTypeMapping _time6                       = new TimeSpanTypeMapping("time(6)", DbType.Time);
+        private readonly FirebirdDateTimeTypeMapping _dateTime6              = new FirebirdDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly FirebirdDateTimeOffsetTypeMapping _dateTimeOffset6  = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly FirebirdDateTimeOffsetTypeMapping _timeStamp6 = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly TimeSpanTypeMapping _time6                       = new TimeSpanTypeMapping("time", DbType.Time);
 
         // json
-        private readonly RelationalTypeMapping _json = new FirebirdStringTypeMapping("longtext", DbType.AnsiString);
+        private readonly RelationalTypeMapping _json = new FirebirdStringTypeMapping("BLOB SUB_TYPE 1 SEGMENT SIZE 80", DbType.AnsiString);
 
         // row version
-        private readonly RelationalTypeMapping _rowversion   = new FirebirdDateTimeTypeMapping("datetime", DbType.DateTime);
+        private readonly RelationalTypeMapping _rowversion   = new FirebirdDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
 
         // guid
-        private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("char(36)", DbType.Guid);
+        private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("varchar(36)", DbType.Guid);
 
         readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
         readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
@@ -70,7 +70,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             _storeTypeMappings
                 = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
-                {
+                { // TODO
                     // boolean
                     { "bit", _bit },
 
@@ -116,7 +116,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "json", _json },
 
                     // guid
-                    { "char(36)", _uniqueidentifier }
+                    { "varchar(36)", _uniqueidentifier }
                 };
 
             _clrTypeMappings

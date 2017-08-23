@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -110,10 +111,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             AppendWhereClause(commandStringBuilder, conditionOperations);
             commandStringBuilder.Append(SqlGenerationHelper.StatementTerminator).AppendLine();
 
-            commandStringBuilder
-                .Append("SELECT ");
+            //commandStringBuilder
+            //    .Append("SELECT ");
 
-            AppendUpdateOutputClause(commandStringBuilder, schema, name, readOperations, operations);
+            //AppendUpdateOutputClause(commandStringBuilder, schema, name, readOperations, operations);
 
             return ResultSetMapping.LastInResultSet;
         }
@@ -161,11 +162,19 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             IReadOnlyList<ColumnModification> operations,
             IReadOnlyList<ColumnModification> allOperations)
         {
+
+            /*if (allOperations.Count > 0 && allOperations[0] == operations[0])
+            {
+                commandStringBuilder.Append($"SELECT { string.Join(", ", operations.Select(o => SqlGenerationHelper.DelimitIdentifier(o.ColumnName))) } FROM { SqlGenerationHelper.DelimitIdentifier(name, schema) } WHERE { SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName) } = LAST_INSERT_ID()");
+                commandStringBuilder.Append(SqlGenerationHelper.StatementTerminator).AppendLine();
+                Debug.WriteLine(commandStringBuilder.ToString());
+            }*/
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
                 string old = commandStringBuilder.ToString();
                 commandStringBuilder.Clear();
-                commandStringBuilder.Append(StringUtils.ReplaceLastOccurrence(old, ";", $" RETURNING { SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName) };"));                
+                commandStringBuilder.Append(StringUtils.ReplaceLastOccurrence(old, ";", $" RETURNING { SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName) };"));
+                Debug.WriteLine(commandStringBuilder.ToString());
             }
             else if (operations.Count > 0)
             {
@@ -204,9 +213,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             string schema, int commandPosition)
         {
         
-            Check.NotNull(commandStringBuilder, nameof(commandStringBuilder))
-                .Append("SELECT ROW_COUNT()")
-                .Append(SqlGenerationHelper.StatementTerminator).AppendLine();
+            //Check.NotNull(commandStringBuilder, nameof(commandStringBuilder))
+            //    .Append("SELECT ROW_COUNT()")
+            //    .Append(SqlGenerationHelper.StatementTerminator).AppendLine();
 
             return ResultSetMapping.LastInResultSet;
         }

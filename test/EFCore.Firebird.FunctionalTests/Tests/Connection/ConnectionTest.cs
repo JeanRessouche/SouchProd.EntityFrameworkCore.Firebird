@@ -60,8 +60,14 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
         {
             using (var db = NewDbContext(false))
             {
-                var blog = db.Blogs.Where(x=>x.Id>5).FirstOrDefault();
+                var blog = db.Blogs.FirstOrDefault(x => x.Id > 5);
                 Assert.NotNull(blog);
+
+                var blogs = db.Blogs.Where(x => !x.Title.Equals("test")).ToList();
+                Assert.NotEqual(0, blogs.Count);
+
+                var item = db.Blogs.Where(x => !x.Title.Equals("test")).ToList();
+                Assert.NotEqual(0, item.Count);
             }
         }
 
@@ -73,6 +79,19 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
                 var blog = await db.Blogs.FirstOrDefaultAsync();
                 Assert.NotNull(blog);
             }
+        }
+
+        [Fact]
+        public void SimpleUpdate()
+        {
+            using (var db = NewDbContext(false))
+            {
+                var blog = db.Blogs.FirstOrDefault();
+                blog.Title = "Updated3";
+                db.SaveChanges();
+                Assert.NotNull(blog);
+            }
+           
         }
 
         [Theory]

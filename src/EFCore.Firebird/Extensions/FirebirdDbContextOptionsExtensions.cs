@@ -48,24 +48,11 @@ namespace Microsoft.EntityFrameworkCore
             Check.NotNull(optionsBuilder, nameof(optionsBuilder));
             Check.NotNull(connection, nameof(connection));
 
-            var csb = new FbConnectionStringBuilder(connection.ConnectionString);
-            csb.ReturnRecordsAffected = false;/*
-            if (csb.AllowUserVariables != true || csb.BufferResultSets != true || csb.UseAffectedRows != false)
-	        {
-	            try
-	            {
-		            csb.AllowUserVariables = true;
-                    csb.BufferResultSets = true;
-		            csb.UseAffectedRows = false;
-		            connection.ConnectionString = csb.ConnectionString;
-	            }
-	            catch (FirebirdException e)
-                {
-                    throw new InvalidOperationException("The Firebird Connection string used with Pomelo.EntityFrameworkCore.Firebird " +
-                    	"must contain \"AllowUserVariables=true;BufferResultSets=true;UseAffectedRows=false\"", e);
-                }
-            }*/
-            
+            var csb = new FbConnectionStringBuilder(connection.ConnectionString)
+            {
+                ReturnRecordsAffected = false
+            };
+
             var extension = GetOrCreateExtension(optionsBuilder).WithConnection(connection);
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
             ConfigureWarnings(optionsBuilder);

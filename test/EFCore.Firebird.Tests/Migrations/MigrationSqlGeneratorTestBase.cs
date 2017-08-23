@@ -24,7 +24,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new AddColumnOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "Name",
                     ClrType = typeof(string),
                     ColumnType = "varchar(30)",
@@ -114,7 +114,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new AddForeignKeyOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "FK_People_Companies",
                     Columns = new[] { "EmployerId1", "EmployerId2" },
                     PrincipalTable = "Companies",
@@ -144,7 +144,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new AddPrimaryKeyOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "PK_People",
                     Columns = new[] { "Id1", "Id2" }
                 });
@@ -168,7 +168,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new AddUniqueConstraintOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "AK_People_DriverLicense",
                     Columns = new[] { "DriverLicense_State", "DriverLicense_Number" }
                 });
@@ -192,7 +192,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new AlterColumnOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "LuckyNumber",
                     ClrType = typeof(int),
                     ColumnType = "int",
@@ -236,7 +236,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new RenameTableOperation
                 {
                     Name = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     NewName = "Personas",
                     NewSchema = "dbo"
                 });
@@ -250,7 +250,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 {
                     Name = "IX_People_Name",
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Columns = new[] { "FirstName", "LastName" },
                     IsUnique = true
                 });
@@ -264,7 +264,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 {
                     Name = "IX_People_Name",
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Columns = new[] { "FirstName", "LastName" },
                     [FirebirdAnnotationNames.FullTextIndex] = "FULLTEXT"
                 });
@@ -278,7 +278,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 {
                     Name = "IX_People_Name",
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Columns = new[] { "FirstName", "LastName" },
                     [FirebirdAnnotationNames.SpatialIndex] = "SPATIAL"
                 });
@@ -317,7 +317,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new CreateTableOperation
                 {
                     Name = "People",
-                    Schema = "dbo",
+                    Schema = "",
                     Columns =
                     {
                         new AddColumnOperation
@@ -375,7 +375,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new CreateTableOperation
                 {
                     Name = "TestUlongAutoIncrement",
-                    Schema = "dbo",
+                    Schema = "",
                     Columns =
                     {
                         new AddColumnOperation
@@ -402,7 +402,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropColumnOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "",
                     Name = "LuckyNumber"
                 });
         }
@@ -414,7 +414,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropForeignKeyOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "FK_People_Companies"
                 });
         }
@@ -438,7 +438,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropPrimaryKeyOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "PK_People"
                 });
         }
@@ -461,7 +461,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropUniqueConstraintOperation
                 {
                     Table = "People",
-                    Schema = "dbo",
+                    Schema = "", // "dbo",
                     Name = "AK_People_SSN"
                 });
         }

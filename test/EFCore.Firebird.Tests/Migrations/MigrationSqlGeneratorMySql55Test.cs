@@ -26,7 +26,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             {
                 var FirebirdOptions = new Mock<IFirebirdOptions>();
                 FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
-                    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("5.5.2")));
+                    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("2.1")));
                 FirebirdOptions
                     .Setup(fn =>
                         fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
