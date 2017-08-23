@@ -47,22 +47,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
             Console.WriteLine($"Using Batch Size: {AppConfig.EfBatchSize}");
             if (AppConfig.EfSchema != null)
                 Console.WriteLine($"Using Schema: {AppConfig.EfSchema}");
-#if POMELO
+
             services.AddDbContext<AppDb>(
                 options => options.UseFirebird(AppConfig.Config["Data:ConnectionString"],
                     FirebirdOptions => FirebirdOptions.MaxBatchSize(AppConfig.EfBatchSize)),
                 ServiceLifetime.Scoped);
-#elif ORACLE
-            services.AddDbContext<AppDb>(
-                options => options.UseFirebird(AppConfig.Config["Data:ConnectionString"],
-                    FirebirdOptions => FirebirdOptions.MaxBatchSize(AppConfig.EfBatchSize)),
-                ServiceLifetime.Scoped);
-#elif SAPIENT
-            services.AddDbContext<AppDb>(
-                options => options.UseFirebird(AppConfig.Config["Data:ConnectionString"],
-                    FirebirdOptions => FirebirdOptions.MaxBatchSize(AppConfig.EfBatchSize)),
-                ServiceLifetime.Scoped);
-#endif
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

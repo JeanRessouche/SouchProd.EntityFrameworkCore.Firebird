@@ -197,12 +197,19 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 foreach (var parameter in Parameters)
                 {
                     object parameterValue;
+               
+                    Debug.WriteLine($"Set parameter {parameter.InvariantName}");
 
                     if (parameterValues.TryGetValue(parameter.InvariantName, out parameterValue))
                     {
-	                    if (parameterValue != null)
+                        
+
+                        if (parameterValue != null)
 	                    {
-		                    if (parameterValue is char)
+                            Debug.WriteLine($"Parameter value = {parameterValue}");
+                            if (parameterValue is bool)
+                                parameter.AddDbParameter(command, Convert.ToInt16((bool)parameterValue));
+                            else if (parameterValue is char)
 			                    parameter.AddDbParameter(command, Convert.ToByte((char)parameterValue));
 		                    else if (parameterValue.GetType().FullName.StartsWith("System.JsonObject"))
 			                    parameter.AddDbParameter(command, parameterValue.ToString());
@@ -212,7 +219,13 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 			                    parameter.AddDbParameter(command, parameterValue);
 	                    }
 	                    else
-	                    {
+	                    {                            
+                            Debug.WriteLine($"Parameter value = null");
+
+                            parameterValue = DBNull.Value;
+                            
+                            TypeCode code = Type.GetTypeCode(parameterValue.GetType());
+
                             parameter.AddDbParameter(command, parameterValue);
 	                    }
                     }

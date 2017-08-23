@@ -15,7 +15,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		// blog
 		public DbSet<Blog> Blogs { get; set; }
 
-#if POMELO
 		// crm
 		public DbSet<CrmAdmin> CrmAdmins { get; set; }
 		public DbSet<CrmRole> CrmRoles { get; set; }
@@ -35,7 +34,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		public DbSet<PersonKid> PeopleKids { get; set; }
 		public DbSet<PersonParent> PeopleParents { get; set; }
 		public DbSet<PersonFamily> PeopleFamilies { get; set; }
-#endif
 
 		private readonly bool _configured;
 	    private readonly DbConnection _connection;
@@ -68,18 +66,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		{
 		    if (_configured)
 		        return;
-
-#if POMELO
+            
 		    if (_connection != null)
                 optionsBuilder.UseFirebird(_connection, options => options.MaxBatchSize(AppConfig.EfBatchSize));
 		    else
 				optionsBuilder.UseFirebird(AppConfig.Config["Data:ConnectionString"], options => options.MaxBatchSize(AppConfig.EfBatchSize));
-#else
-            if (_connection != null)
-                optionsBuilder.UseFirebird(_connection, options => options.MaxBatchSize(AppConfig.EfBatchSize));
-		    else
-		        optionsBuilder.UseFirebird(AppConfig.Config["Data:ConnectionString"], options => options.MaxBatchSize(AppConfig.EfBatchSize));
-#endif
 
 		    optionsBuilder.UseLoggerFactory(new LoggerFactory().AddDebug().AddConsole(AppConfig.Config.GetSection("Logging")));
 		}
@@ -117,12 +108,10 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 
 			});
 
-#if POMELO
 			// Add our models fluent APIs
 			CrmMeta.OnModelCreating(modelBuilder);
 			GeneratedContactMeta.OnModelCreating(modelBuilder);
 			PeopleMeta.OnModelCreating(modelBuilder);
-#endif
 
 		    if (AppConfig.EfSchema != null)
 		    {

@@ -17,7 +17,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?\s*(unsigned)?", RegexOptions.IgnoreCase);
 
         // boolean
-        private readonly FirebirdBoolTypeMapping _bit          = new FirebirdBoolTypeMapping("bit", DbType.Boolean);
+        private readonly FirebirdBoolTypeMapping _bit          = new FirebirdBoolTypeMapping("smallint", DbType.Int16);
 
         // integers
         private readonly SByteTypeMapping _tinyint          = new SByteTypeMapping("smallint", DbType.SByte);

@@ -46,6 +46,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     The generated string.
         /// </returns>
         protected override string GenerateNonNullSqlLiteral(object value)
-            => (bool)value ? "TRUE" : "FALSE";
+            => (int)value==1 ? "TRUE" : "FALSE";
     }
 }

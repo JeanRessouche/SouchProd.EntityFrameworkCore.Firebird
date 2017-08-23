@@ -37,10 +37,7 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0-preview2-final" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' != 'Oracle' AND '$(Configuration)' != 'Sapient' ">
-    <DefineConstants>POMELO</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Condition=" '$(Configuration)' != 'Oracle' AND '$(Configuration)' != 'Sapient' ">
+  <ItemGroup>
     <ProjectReference Include="..\..\src\EFCore.Firebird\EFCore.Firebird.csproj" />
   </ItemGroup>
 

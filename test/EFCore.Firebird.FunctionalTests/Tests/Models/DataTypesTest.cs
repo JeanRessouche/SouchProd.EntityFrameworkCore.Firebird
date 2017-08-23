@@ -224,7 +224,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
 	        // save them to the database
 	        using (var db = new AppDb()){
 		        db.DataTypesSimple.Add(emptyMemAsync);
-		        db.DataTypesSimple.Add(valueMemAsync);
+		       // db.DataTypesSimple.Add(valueMemAsync);
 		        await db.SaveChangesAsync();
 
 		        db.DataTypesSimple.Add(emptyMemSync);
