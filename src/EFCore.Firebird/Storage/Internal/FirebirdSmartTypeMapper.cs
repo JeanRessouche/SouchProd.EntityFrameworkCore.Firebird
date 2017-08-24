@@ -1,4 +1,7 @@
-// Copyright (c) SouchProd. All rights reserved. // TODO: Credits Pomelo Foundation & EFCore
+// Copyright (c) 2017 Jean Ressouche @SouchProd. All rights reserved.
+// https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird
+// This code inherit from the .Net Foundation Entity Core repository (Apache licence)
+// and from the Pomelo Foundation Mysql provider repository (MIT licence).
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
 using System;
@@ -15,10 +18,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FirebirdSmartTypeMapper : FirebirdTypeMapper
     {
-        private static readonly FirebirdDateTimeTypeMapping DateTime             = new FirebirdDateTimeTypeMapping("datetime", DbType.DateTime);
-        private static readonly FirebirdDateTimeOffsetTypeMapping DateTimeOffset = new FirebirdDateTimeOffsetTypeMapping("datetime", DbType.DateTime);
+        private static readonly FirebirdDateTimeTypeMapping DateTime             = new FirebirdDateTimeTypeMapping("timestamp", DbType.DateTime);
+        private static readonly FirebirdDateTimeOffsetTypeMapping DateTimeOffset = new FirebirdDateTimeOffsetTypeMapping("timestamp", DbType.DateTime);
         private static readonly TimeSpanTypeMapping Time                 = new TimeSpanTypeMapping("time", DbType.Time);
-        private static readonly GuidTypeMapping Guid                  = new GuidTypeMapping("varchar(36)", DbType.Guid);
+        private static readonly GuidTypeMapping Guid                  = new GuidTypeMapping("char(38)", DbType.Guid);
 
         private readonly IFirebirdOptions _options;
 
@@ -51,19 +54,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         protected virtual RelationalTypeMapping MaybeConvertMapping(RelationalTypeMapping mapping)
         {
-            if (mapping.StoreType == "varchar(36)" && mapping.ClrType == typeof(Guid))
+            if (mapping.StoreType == "char(38)" && mapping.ClrType == typeof(Guid))
                 return Guid;
-
-            // SupportsDateTime6
-            if (!_options.ConnectionSettings.ServerVersion.SupportsDateTime6)
-            {
-                if (mapping.StoreType == "datetime(6)" && mapping.ClrType == typeof(DateTime))
-                    return DateTime;
-                if (mapping.StoreType == "datetime(6)" && mapping.ClrType == typeof(DateTimeOffset))
-                    return DateTimeOffset;
-                if (mapping.StoreType == "time(6)")
-                    return Time;
-            }
 
             return mapping;
         }

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using FirebirdSql.Data.FirebirdClient;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -44,9 +42,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 		    return await ExecuteAsync(IOBehavior.Asynchronous, connection, executeMethod, parameterValues, cancellationToken).ConfigureAwait(false);
 	    }
 
-        private RelationalDataReader Rdr;
-        private WrappedFirebirdDataReader Wrp;
-        private DbCommand dbCommand;
+        private RelationalDataReader _rdr;
+        private WrappedFirebirdDataReader _wrp;
+        private DbCommand _dbCommand;
 
         private async Task<object> ExecuteAsync(
 		    IOBehavior ioBehavior,
@@ -58,7 +56,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             Check.NotNull(connection, nameof(connection));
 
             /*using (DbCommand */
-	        dbCommand = CreateCommand(connection, parameterValues);/*)*/
+	        _dbCommand = CreateCommand(connection, parameterValues);/*)*/
             {
                 var fbConnection = connection as FirebirdRelationalConnection;
                 object result;
@@ -78,52 +76,35 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
                     opened = true;
 
-                   /* if (dbCommand.CommandText.ToUpper().Contains("INSERT ") && dbCommand.CommandText.ToUpper().Contains(" RETURNING "))
-                    {
+                    if (_dbCommand.CommandText.ToUpper().Contains("INSERT ") && _dbCommand.CommandText.ToUpper().Contains(" RETURNING "))
                         executeMethod = DbCommandMethod.ExecuteScalar;
-                    }*/
 
                     switch (executeMethod)
                     {
                         case DbCommandMethod.ExecuteNonQuery:
                             {
                                 result = ioBehavior == IOBehavior.Asynchronous ?
-                                    await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false) :
-                                    dbCommand.ExecuteNonQuery();
+                                    await _dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false) :
+                                    _dbCommand.ExecuteNonQuery();
                                 break;
                             }
                         case DbCommandMethod.ExecuteScalar:
                             {
-                                if (dbCommand.CommandText.ToUpper().Contains("INSERT ") &&
-                                    dbCommand.CommandText.ToUpper().Contains(" RETURNING "))
-                                {
-                                    /*var lastInsertedInParam =
-                                        new DbParameter("Id", FbDbType.BigInt);
-                                    dbCommand.Parameters.Add(lastInsertedInParam);
-                                    var idParam = dbCommand.Parameters["Id"];
-                                    idParam.Direction = ParameterDirection.Output;
-                                    Debug.WriteLine(idParam.Value.ToString());*/
-                                    // dbCommand.CommandText
-                                    // Parameters.Add("empID", SqlDbType.BigInt).Direction = ParameterDirection.Output;
-                                }
-
                                 result = ioBehavior == IOBehavior.Asynchronous ?
-                                    await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) :
-                                    dbCommand.ExecuteScalar();
+                                    await _dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) :
+                                    _dbCommand.ExecuteScalar();
                                 break;
                             }
                         case DbCommandMethod.ExecuteReader:
                             {
                                 var dataReader = ioBehavior == IOBehavior.Asynchronous ?
-                                    await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false) :
-                                    dbCommand.ExecuteReader();
+                                    await _dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false) :
+                                    _dbCommand.ExecuteReader();
 
-                                Wrp = new WrappedFirebirdDataReader(dataReader);
+                                _wrp = new WrappedFirebirdDataReader(dataReader);
+                                _rdr = new RelationalDataReader(connection, _dbCommand, _wrp, commandId, Logger);
 
-                                Rdr = new RelationalDataReader(connection, dbCommand, Wrp, commandId, Logger);
-
-                                result = Rdr;
-
+                                result = _rdr;
                                 break;
                             }
                         default:
@@ -133,7 +114,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     }
 
                     Logger.CommandExecuted(
-                        dbCommand,
+                        _dbCommand,
                         executeMethod,
                         commandId,
                         connection.ConnectionId,
@@ -146,7 +127,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 catch (Exception exception)
                 {
                     Logger.CommandError(
-                        dbCommand,
+                        _dbCommand,
                         executeMethod,
                         commandId,
                         connection.ConnectionId,
@@ -162,7 +143,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 }
                 finally
                 {
-                    dbCommand.Parameters.Clear();
+                    _dbCommand.Parameters.Clear();
                 }
 
                 return result;
@@ -202,8 +183,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
                     if (parameterValues.TryGetValue(parameter.InvariantName, out parameterValue))
                     {
-                        
-
                         if (parameterValue != null)
 	                    {
                             Debug.WriteLine($"Parameter value = {parameterValue}");
@@ -219,13 +198,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 			                    parameter.AddDbParameter(command, parameterValue);
 	                    }
 	                    else
-	                    {                            
-                            Debug.WriteLine($"Parameter value = null");
-
-                            parameterValue = DBNull.Value;
-                            
-                            TypeCode code = Type.GetTypeCode(parameterValue.GetType());
-
+	                    {
+                            // Parameter value is null, this is not supported by the FB Provider 5.9.1.
+                            // as the TypeCode is not supported in .Net Standard 1.6.
+                            // SO, let's fork the FB Provider project, porting it to 2.0 & send a PR.
                             parameter.AddDbParameter(command, parameterValue);
 	                    }
                     }

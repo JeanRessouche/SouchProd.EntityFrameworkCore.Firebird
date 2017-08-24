@@ -18,7 +18,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
     /// </summary>
     public class FirebirdDateTimeOffsetTypeMapping : RelationalTypeMapping
     {
-        private const string DateTimeOffsetFormatConst6 = @"{0:yyyy-MM-dd HH\:mm\:ss.ffffff}";
         private const string DateTimeOffsetFormatConst = @"{0:yyyy-MM-dd HH\:mm\:ss}";
         private readonly string _storeType;
 
@@ -47,6 +46,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     Gets the string format to be used to generate SQL literals of this type.
         /// </summary>
-        protected override string SqlLiteralFormatString => "'" + (_storeType.EndsWith("(6)") ? DateTimeOffsetFormatConst6 : DateTimeOffsetFormatConst) + "'";
+        protected override string SqlLiteralFormatString => "'" + DateTimeOffsetFormatConst + "'";
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore.Utilities;
 using System;
 using System.Collections;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
@@ -104,13 +105,20 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             try
             {
-	            // try normal casting
-	            if (typeof(T) == typeof(char))
+                if (typeof(T) == typeof(Guid))
+                    return(T) Convert.ChangeType(new Guid(GetReader().GetFieldValue<string>(ordinal)), typeof(T));
+
+                if (typeof(T) == typeof(char))
 		            return (T) Convert.ChangeType(Convert.ToChar(GetReader().GetFieldValue<byte>(ordinal)), typeof(T));
+
+                if (typeof(T) == typeof(sbyte))
+                    return (T)Convert.ChangeType(Convert.ToSByte(GetReader().GetFieldValue<Int16>(ordinal)), typeof(T));
+
                 return GetReader().GetFieldValue<T>(ordinal);
             }
             catch (InvalidCastException e)
             {
+                Debug.WriteLine($"GetFieldValue => {typeof(T)} {e.Message}");
                 return ConvertWithReflection<T>(ordinal, e);
             }
         }

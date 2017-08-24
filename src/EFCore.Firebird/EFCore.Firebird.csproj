@@ -7,13 +7,17 @@
     <AssemblyName>SouchProd.EntityFrameworkCore.Firebird</AssemblyName>
     <PackageId>SouchProd.EntityFrameworkCore.Firebird</PackageId>
     <PackageTags>Entity Framework Core;entity-framework-core;FIREBIRD;EF;ORM;Data</PackageTags>
-    <PackageIconUrl>https://avatars2.githubusercontent.com/u/19828814?v=3</PackageIconUrl>
+    <PackageIconUrl>https://souchprod.com/images/512LogoOnly.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</RepositoryUrl>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <Version>2.0.2</Version>
+    <Copyright>SouchProd 2017</Copyright>
+    <Company>SouchProd</Company>
+    <Authors>Jean Ressouche</Authors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0" />
@@ -23,6 +27,6 @@
     <PackageReference Include="Pomelo.JsonObject" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\FirebirdSql.Data.FirebirdClient\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient_NETSTANDARD16.csproj" />
+    <ProjectReference Include="..\..\..\FirebirdSql.Data.FirebirdClient\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient_NETSTANDARD20.csproj" />
   </ItemGroup>
 </Project>

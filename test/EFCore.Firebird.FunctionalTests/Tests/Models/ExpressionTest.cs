@@ -389,11 +389,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
                 ConvertedByte = m.TypeByte.ToString(),
                 ConvertedSByte = m.TypeSbyte.ToString(),
                 ConvertedBool = m.TypeBool.ToString(),
-                ConvertedNullBool = m.TypeBoolN.ToString(),
+              //  ConvertedNullBool = m.TypeBoolN.ToString(),
                 ConvertedDecimal = m.TypeDecimal.ToString(),
                 ConvertedDouble = m.TypeDouble.ToString(),
                 ConvertedFloat = m.TypeFloat.ToString(),
-                ConvertedGuid = m.TypeGuid.ToString(),
+                //ConvertedGuid = m.TypeGuid.ToString(),
                 Text = m.TypeChar
             }
             ).FirstOrDefaultAsync();

@@ -10,23 +10,15 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 
 		// bool
 		public bool    TypeBool { get; set; }
-		// nullable bool
 		public bool?   TypeBoolN { get; set; }
-
 		// integers
 		public short   TypeShort { get; set; }
-		public ushort  TypeUshort { get; set; }
 		public int     TypeInt { get; set; }
-		public uint    TypeUint { get; set; }
 		public long    TypeLong { get; set; }
-		public ulong   TypeUlong { get; set; }
 		// nullable integers
 		public short?  TypeShortN { get; set; }
-		public ushort? TypeUshortN { get; set; }
 		public int?    TypeIntN { get; set; }
-		public uint?   TypeUintN { get; set; }
 		public long?   TypeLongN { get; set; }
-		public ulong?  TypeUlongN { get; set; }
 
 		// decimals
 		public decimal  TypeDecimal { get; set; }
@@ -48,12 +40,12 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 
 		// DateTime
 		public DateTime        TypeDateTime { get; set; }
-		public DateTimeOffset  TypeDateTimeOffset  { get; set; }
-		public TimeSpan        TypeTimeSpan { get; set; }
+		//public DateTimeOffset  TypeDateTimeOffset  { get; set; }
+		//public TimeSpan        TypeTimeSpan { get; set; }
 		// nullable DateTime
 		public DateTime?       TypeDateTimeN { get; set; }
-		public DateTimeOffset? TypeDateTimeOffsetN  { get; set; }
-		public TimeSpan?       TypeTimeSpanN { get; set; }
+		//public DateTimeOffset? TypeDateTimeOffsetN  { get; set; }
+		//public TimeSpan?       TypeTimeSpanN { get; set; }
 
 		// Enum
 		public TestEnum TypeEnum           { get; set; }
@@ -63,9 +55,9 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 		public TestEnumByte? TypeEnumByteN { get; set; }
 
 		// guid
-		public Guid  TypeGuid { get; set; }
+	    public Guid TypeGuid { get; set; }
 		// nullable guid
-		public Guid? TypeGuidN { get; set; }
+		//public Guid? TypeGuidN { get; set; }
 	}
 
 	public class DataTypesVariable

@@ -1,7 +1,7 @@
 // Copyright (c) 2017 Jean Ressouche @SouchProd. All rights reserved.
 // https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird
 // This code inherit from the .Net Foundation Entity Core repository (Apache licence)
-// and from the Pomelo Foundation Mysql provider repository (MIT licence).
+// and from the Pomelo Foundation Mysql provider repository (MIT licence)
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
 using System;
@@ -9,13 +9,13 @@ using System.Globalization;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Update;
 
-// ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
-    public class FirebirdSqlGenerationHelper : RelationalSqlGenerationHelper
+    public class FirebirdSqlSqlGenerationHelper : RelationalSqlGenerationHelper
     {
-        public FirebirdSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies)
+        public FirebirdSqlSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies)
             : base(dependencies)
         {
         }
@@ -45,7 +45,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override string DelimitIdentifier(string identifier)
-            => $"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier)))}"; // Interpolation okay; strings
+            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier)))}\""; // Interpolation okay; strings
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -53,9 +53,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override void DelimitIdentifier(StringBuilder builder, string identifier)
         {
             Check.NotEmpty(identifier, nameof(identifier));
-            //builder.Append('`');
+            builder.Append('"');
             EscapeIdentifier(builder, identifier);
-            //builder.Append('`');
+            builder.Append('"');
         }
 
         //
@@ -69,9 +69,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         // Returns:
         //     A valid name based on the candidate name.
         public override string GenerateParameterName(string name)
-        {
-            return "@" + name;
-        }
+            => $"@{name}";
+
 
         //
         // Summary:
@@ -84,8 +83,53 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         //   name:
         //     The candidate name for the parameter.
         public override void GenerateParameterName(StringBuilder builder, string name)
+            => builder.Append("@").Append(name);
+
+
+
+        public static object GenerateValue(ColumnModification column)
         {
-            builder.Append("@").Append(name);
+            object value = null;
+            if (column.Property.ClrType == typeof(string))
+                value = ($"'{column.Value}'");
+            else if (column.Property.ClrType == typeof(int)
+                     || column.Property.GetType() == typeof(int?)
+                     || column.Property.GetType() == typeof(long)
+                     || column.Property.GetType() == typeof(long?)
+            )
+                value = (column.Value);
+            else if (column.Property.ClrType == typeof(decimal)
+                     || column.Property.GetType() == typeof(decimal?)
+                     || column.Property.GetType() == typeof(double)
+                     || column.Property.GetType() == typeof(double?)
+            )
+                value = (column.Value);
+            else if (column.Property.ClrType == typeof(DateTime)
+                     || column.Property.GetType() == typeof(DateTime?)
+                     || column.Property.GetType() == typeof(TimeSpan)
+                     || column.Property.GetType() == typeof(TimeSpan?)
+            )
+                value = ((column.Value == null ? null : $"'{DateTime.Parse(column.Value.ToString()).ToString("yyyy-MM-dd HH:mm:ss.ffff")}'"));
+
+            else
+                value = ($"'{column.Value}'");
+
+            return value;
         }
+
+        public static void GenerateValue(StringBuilder builder, ColumnModification column)
+        {
+            builder.Append(GenerateValue(column));
+        }
+
+
+
+
+        public static object GetTypeColumnToString(ColumnModification column)
+        {
+            return "VARCHAR(100)";
+        }
+
+
     }
 }

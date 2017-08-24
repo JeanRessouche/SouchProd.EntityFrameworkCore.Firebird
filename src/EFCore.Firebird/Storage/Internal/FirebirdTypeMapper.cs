@@ -1,4 +1,7 @@
-// Copyright (c) SouchProd. All rights reserved. // TODO: Credits Pomelo Foundation & EFCore
+// Copyright (c) 2017 Jean Ressouche @SouchProd. All rights reserved.
+// https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird
+// This code inherit from the .Net Foundation Entity Core repository (Apache licence)
+// and from the Pomelo Foundation Mysql provider repository (MIT licence).
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
 using System;
@@ -17,7 +20,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?\s*(unsigned)?", RegexOptions.IgnoreCase);
 
         // boolean
-        private readonly FirebirdBoolTypeMapping _bit          = new FirebirdBoolTypeMapping("smallint", DbType.Int16);
+        private readonly FirebirdBoolTypeMapping _bit       = new FirebirdBoolTypeMapping("smallint", DbType.SByte);
 
         // integers
         private readonly SByteTypeMapping _tinyint          = new SByteTypeMapping("smallint", DbType.SByte);
@@ -47,10 +50,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    private readonly FirebirdStringTypeMapping _varcharmax      = new FirebirdStringTypeMapping("varchar(4000)", DbType.AnsiString);
 
 	    // DateTime
-        private readonly FirebirdDateTimeTypeMapping _dateTime6              = new FirebirdDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
-        private readonly FirebirdDateTimeOffsetTypeMapping _dateTimeOffset6  = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
-        private readonly FirebirdDateTimeOffsetTypeMapping _timeStamp6 = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
-        private readonly TimeSpanTypeMapping _time6                       = new TimeSpanTypeMapping("time", DbType.Time);
+        private readonly FirebirdDateTimeOffsetTypeMapping _timeStamp = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly TimeSpanTypeMapping _time                       = new TimeSpanTypeMapping("time", DbType.Time);
 
         // json
         private readonly RelationalTypeMapping _json = new FirebirdStringTypeMapping("BLOB SUB_TYPE 1 SEGMENT SIZE 80", DbType.AnsiString);
@@ -59,7 +60,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly RelationalTypeMapping _rowversion   = new FirebirdDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
 
         // guid
-        private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("varchar(36)", DbType.Guid);
+        private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("varchar(38)", DbType.Guid);
 
         readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
         readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
@@ -91,6 +92,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "double", _double },
                     { "float", _float },
 
+                    // TODO
                     // binary
                     { "binary", _binary },
                     { "varbinary", _varbinary },
@@ -102,21 +104,22 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     // string
                     { "char", _char },
                     { "varchar", _varchar },
+
+                    // TODO
                     { "tinytext", _varcharmax },
                     { "text", _varcharmax },
                     { "mediumtext", _varcharmax },
                     { "longtext", _varcharmax },
 
                     // DateTime
-                    { "datetime", _dateTime6 },
-                    { "time", _time6 },
-                    { "timestamp", _timeStamp6 },
+                    { "time", _time },
+                    { "timestamp", _timeStamp },
 
                     // json
                     { "json", _json },
 
                     // guid
-                    { "varchar(36)", _uniqueidentifier }
+                    { "char(38)", _uniqueidentifier }
                 };
 
             _clrTypeMappings
@@ -144,9 +147,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	                { typeof(char), _utinyint },
 
 	                // DateTime
-	                { typeof(DateTime), _dateTime6 },
-	                { typeof(DateTimeOffset), _dateTimeOffset6 },
-	                { typeof(TimeSpan), _time6 },
+	                { typeof(DateTime), _timeStamp },
+	                { typeof(DateTimeOffset), _timeStamp },
+	                { typeof(TimeSpan), _time },
 
 	                // json
 	                { typeof(JsonObject<>), _json },
@@ -164,7 +167,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     "varchar"
                 };
 
-            ByteArrayMapper
+            ByteArrayMapper // TODO
                 = new ByteArrayRelationalTypeMapper(
                     8000,
                     _varbinarymax,
@@ -177,7 +180,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             StringMapper
                 = new StringRelationalTypeMapper(
-                    maxBoundedAnsiLength: 8000,
+                    maxBoundedAnsiLength: 4000,
                     defaultAnsiMapping: _varcharmax,
                     unboundedAnsiMapping: _varcharmax,
                     keyAnsiMapping: _varchar127,
@@ -186,7 +189,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                         DbType.AnsiString,
                         unicode: false,
                         size: size),
-                    maxBoundedUnicodeLength: 8000,
+                    maxBoundedUnicodeLength: 4000,
                     defaultUnicodeMapping: _varcharmax,
                     unboundedUnicodeMapping: _varcharmax,
                     keyUnicodeMapping: _varchar127,

@@ -1,4 +1,7 @@
-// Copyright (c) SouchProd. All rights reserved. // TODO: Credits Pomelo Foundation & EFCore
+// Copyright (c) 2017 Jean Ressouche @SouchProd. All rights reserved.
+// https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird
+// This code inherit from the .Net Foundation Entity Core repository (Apache licence)
+// and from the Pomelo Foundation Mysql provider repository (MIT licence).
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
 using System;
@@ -15,9 +18,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     using RelationalStrings = EntityFrameworkCore.Internal.RelationalStrings;
 
-    public class FirebirdModificationCommandBatch : AffectedCountModificationCommandBatch
+    public class FirebirdModificationCommandBatch : FirebirdAffectedCountModificationCommandBatch
     {
-
         private const int DefaultNetworkPacketSizeBytes = 4096;
         private const int MaxScriptLength = 65536 * DefaultNetworkPacketSizeBytes / 2;
         private const int MaxParameterCount = 2100;
@@ -131,7 +133,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
             if (grouping != ResultSetMapping.NoResultSet)
             {
-                CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+                CommandResultSet[lastIndex - 1] = ResultSetMapping.NotLastInResultSet;
             }
 
             return stringBuilder.ToString();
@@ -182,6 +184,6 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         {
             return commandIndex;
         }
-
+        
     }
 }

@@ -1,8 +1,12 @@
-/// Copyright (c) SouchProd. All rights reserved. // TODO: Credits Pomelo Foundation & EFCore
+// Copyright (c) 2017 Jean Ressouche @SouchProd. All rights reserved.
+// https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird
+// This code inherit from the .Net Foundation Entity Core repository (Apache licence)
+// and from the Pomelo Foundation Mysql provider repository (MIT licence).
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 
@@ -45,6 +49,8 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
         /// </summary>
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
+            Debug.WriteLine("FirebirdObjectToStringTranslator.Translate " + methodCallExpression.Method.Name);
+            
             string storeType;
 
             if (methodCallExpression.Method.Name == nameof(ToString)
@@ -57,7 +63,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                     out storeType))
             {
                 return new SqlFunctionExpression(
-                    functionName: "CONVERT",
+                    functionName: "CAST",
                     returnType: methodCallExpression.Type,
                     arguments: new[]
                     {
