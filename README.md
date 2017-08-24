@@ -8,7 +8,9 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 
 Work in progress at an early stage**, **not** production ready, **not** beta ready.
 
-  - Last inserted id  propagation to the entity after an insert not yet supported.
+  - ~~Last inserted id  propagation to the entity after an insert not yet supported.~~
+  
+  - GUID not yet supported.
   
   - BLOB & CLOB not yet supported.
 
@@ -23,11 +25,15 @@ Work in progress at an early stage**, **not** production ready, **not** beta rea
 Version | Content | Status
 ------------|------------|------------
 2.0 Preview 1 | First release, read/write support limited to basic field types | :heavy_check_mark: Available
-2.0 Preview 2 | Last inserted id support | :fire: In progress
+2.0 Preview 2 | Last inserted id support | :heavy_check_mark: Available
 2.0 Preview 3 | Read/Write support for all the Firebird data types | :fire: In progress
 2.0 Preview 4 | Scaffolding support | :date: Scheduled
 2.0 Preview 5 | Migration support | :date: Scheduled
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
+
+## Dependencies 
+
+The nuget package SouchProd.Data.FirebirdClient is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly t support .Net standard 2.
 
 ## Contributing 
 
