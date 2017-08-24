@@ -6,13 +6,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
-using EFCore.Firebird.Utilities;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 // ReSharper disable once CheckNamespace
@@ -21,10 +19,15 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
     public class FirebirdUpdateSqlGenerator : UpdateSqlGenerator, IFirebirdUpdateSqlGenerator
     {
         public FirebirdUpdateSqlGenerator(
-            [NotNull] UpdateSqlGeneratorDependencies dependencies)
+            [NotNull] UpdateSqlGeneratorDependencies dependencies,
+            [NotNull] IRelationalTypeMapper mapper
+        )
             : base(dependencies)
         {
+            _mapper = mapper;
         }
+
+        private IRelationalTypeMapper _mapper;
 
         public override ResultSetMapping AppendInsertOperation(
            StringBuilder commandStringBuilder,
@@ -32,10 +35,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
            int commandPosition)
         {
             Check.NotNull(command, nameof(command));
-
             return AppendBulkInsertOperation(commandStringBuilder, new[] { command }, commandPosition);
         }
-
 
         public ResultSetMapping AppendBulkInsertOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
@@ -61,9 +62,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 {
                     foreach (var column in t.ColumnModifications.Where(o => o.IsWrite))
                     {
+                        var typeStr = FirebirdSqlSqlGenerationHelper.GetTypeColumnToString(column, _mapper);
                         commandStringBuilder
                             .Append(addSeparator)
-                            .AppendLine($"{column.ParameterName}  {FirebirdSqlSqlGenerationHelper.GetTypeColumnToString(column)}=?");
+                            .AppendLine($"{column.ParameterName}  {typeStr}=?");
                         addSeparator = ",";
                     }
                 }
@@ -188,5 +190,5 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             //
         } 
 
-        }
+    }
 }

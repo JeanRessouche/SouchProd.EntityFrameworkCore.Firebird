@@ -10,7 +10,7 @@ Work in progress at an early stage**, **not** production ready, **not** beta rea
 
   - ~~Last inserted id  propagation to the entity after an insert not yet supported.~~
   
-  - GUID not yet supported.
+  - ~~Guid fields not yet supported~~.
   
   - BLOB & CLOB not yet supported.
 
@@ -27,8 +27,9 @@ Version | Content | Status
 2.0 Preview 1 | First release, read/write support limited to basic field types | :heavy_check_mark: Available
 2.0 Preview 2 | Last inserted id support | :heavy_check_mark: Available
 2.0 Preview 3 | Read/Write support for all the Firebird data types | :fire: In progress
-2.0 Preview 4 | Scaffolding support | :date: Scheduled
-2.0 Preview 5 | Migration support | :date: Scheduled
+2.0 Preview 4 | Cast, Math & other Linq/Db functions support | :date: Scheduled
+2.0 Preview 5 | Scaffolding support | :date: Scheduled
+2.0 Preview 6 | Migration support | :date: Scheduled
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## Dependencies 
@@ -49,7 +50,7 @@ Wanna add a feature, fix a bug or improve my crappy code ?
 
 This project inherit from the [Microsoft Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) (under Apache licence).
 
-This  benefit also from the great work made on the [Pomelos MySql EF Core provider](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql), a large part of this repository code was forked from this it.
+This project benefit also from the great work made on the [Pomelos MySql EF Core provider](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql), a large part of this repository code was forked from this it.
 
 ## License
 

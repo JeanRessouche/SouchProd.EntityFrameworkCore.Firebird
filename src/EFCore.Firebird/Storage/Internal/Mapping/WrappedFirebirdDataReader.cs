@@ -43,7 +43,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override double GetDouble(int ordinal) => GetReader().GetDouble(ordinal);
         public override Type GetFieldType(int ordinal) => GetReader().GetFieldType(ordinal);
         public override float GetFloat(int ordinal) => GetReader().GetFloat(ordinal);
-        public override Guid GetGuid(int ordinal) => GetReader().GetGuid(ordinal);
+        public override Guid GetGuid(int ordinal) {
+            var str = GetReader().GetString(ordinal);
+            return new Guid(str);
+        }
         public override short GetInt16(int ordinal) => GetReader().GetInt16(ordinal);
         public override int GetInt32(int ordinal) => GetReader().GetInt32(ordinal);
         public override long GetInt64(int ordinal) => GetReader().GetInt64(ordinal);

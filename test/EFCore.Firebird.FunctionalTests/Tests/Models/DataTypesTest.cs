@@ -94,11 +94,11 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
             Assert.Equal(long.MinValue, valueDb.TypeLongN);
 
             // decimals
-            Assert.Equal(decimal.MaxValue, valueDb.TypeDecimal);
+            Assert.Equal(26768.124M, valueDb.TypeDecimal);
             Assert.Equal(double.MaxValue, valueDb.TypeDouble);
             Assert.InRange(valueDb.TypeFloat, TestFloat * (1 - 7e-1), TestFloat * (1 + 7e-1)); // floats have 7 digits of precision
             // nullable decimals
-            Assert.Equal(decimal.MaxValue, valueDb.TypeDecimalN);
+            Assert.Equal(3.1416M, valueDb.TypeDecimalN);
             Assert.Equal(double.MaxValue, valueDb.TypeDoubleN);
             Assert.InRange(valueDb.TypeFloatN.GetValueOrDefault(), TestFloat * (1 - 7e-1), TestFloat * (1 + 7e-1)); // floats have 7 digits of precision
 
@@ -150,11 +150,11 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
             TypeLongN = long.MinValue,
 
             // decimals
-            TypeDecimal = decimal.MaxValue,
+            TypeDecimal = 26768.124M,
             TypeDouble = double.MaxValue,
             TypeFloat = TestFloat,
             // nullable decimals
-            TypeDecimalN = decimal.MaxValue,
+            TypeDecimalN = 3.1416M,
             TypeDoubleN = double.MaxValue,
             TypeFloatN = TestFloat,
 
@@ -411,6 +411,131 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
 		    }
 
 	    }
+
+        [Fact]
+        private void CheckGUIDWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableGuidType
+                {
+                    uid = new Guid()
+                };
+                db.TableGuidType.Add(itm);
+                db.SaveChanges();
+            }
+        }
+
+        [Fact]
+        private void CheckGUIDReadWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableGuidType
+                {
+                    uid = new Guid("3d2a2463-3120-4663-80c8-df3d3e166258")
+                };
+                db.TableGuidType.Add(itm);
+                db.SaveChanges();
+
+                var uid = db.TableGuidType.OrderByDescending(x => x.Id).FirstOrDefault();
+                Assert.Equal(uid.uid.ToString(), "3d2a2463-3120-4663-80c8-df3d3e166258");
+            }
+        }
+
+        [Fact]
+        private void CheckIntReadWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableIntType
+                {
+                    IntField = 31416147
+                };
+                db.TableIntType.Add(itm);
+                db.SaveChanges();
+
+                var uid = db.TableIntType.OrderByDescending(x => x.Id).FirstOrDefault();
+                Assert.Equal(uid.IntField, 31416147);
+            }
+        }
+
+        [Fact]
+        private void CheckIntWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableIntType
+                {
+                    IntField = 31416147
+                };
+                db.TableIntType.Add(itm);
+                db.SaveChanges();
+            }
+        }
+
+        [Fact]
+        private void CheckDoubleWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableDoubleType
+                {
+                    Dbl = 3.1416
+                };
+                db.TableDoubleType.Add(itm);
+                db.SaveChanges();
+            }
+        }
+
+        [Fact]
+        private void CheckDoubleReadWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableDoubleType
+                {
+                    Dbl = 3.1416
+                };
+                db.TableDoubleType.Add(itm);
+                db.SaveChanges();
+
+                var uid = db.TableDoubleType.OrderByDescending(x => x.Id).FirstOrDefault();
+                Assert.Equal(uid.Dbl, 3.1416);
+            }
+        }
+
+        [Fact]
+        private void CheckStringWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableStringType
+                {
+                    StrField = this.GetType().ToString()
+                };
+                db.TableStringType.Add(itm);
+                db.SaveChanges();
+            }
+        }
+
+        [Fact]
+        private void CheckStringReadWrite()
+        {
+            using (var db = new AppDb())
+            {
+                var itm = new TableStringType
+                {
+                    StrField = this.GetType().ToString()
+                };
+                db.TableStringType.Add(itm);
+                db.SaveChanges();
+
+                var uid = db.TableStringType.OrderByDescending(x => x.Id).FirstOrDefault();
+                Assert.Equal(uid.StrField, this.GetType().ToString());
+            }
+        }
+
 
     }
 }

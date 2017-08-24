@@ -15,7 +15,7 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
     public class FirebirdDesignTimeServices : IDesignTimeServices
     {
         public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
-        {
+        {           
             serviceCollection
                 .AddSingleton<IScaffoldingProviderCodeGenerator, FirebirdScaffoldingCodeGenerator>()
                 .AddSingleton<IDatabaseModelFactory, FirebirdDatabaseModelFactory>()

@@ -33,7 +33,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    private readonly ULongTypeMapping _ubigint          = new ULongTypeMapping("bigint", DbType.UInt64);
 
 	    // decimals
-	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(65, 30)", DbType.Decimal);
+	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(13,4)", DbType.Decimal);
 	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
         private readonly FloatTypeMapping _float            = new FloatTypeMapping("float");
 
@@ -89,7 +89,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
                     // decimals
                     { "decimal", _decimal },
-                    { "double", _double },
+                    { "DOUBLE PRECISION", _double },
                     { "float", _float },
 
                     // TODO

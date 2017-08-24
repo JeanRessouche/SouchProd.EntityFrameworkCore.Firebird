@@ -4,7 +4,30 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 {
-	public class DataTypesSimple
+    public class TableDoubleType
+    {
+        public int Id { get; set; }
+        public double Dbl { get; set; }
+    }
+    public class TableIntType
+    {
+        public int Id { get; set; }
+        public int IntField { get; set; }
+    }
+
+    public class TableStringType
+    {
+        public int Id { get; set; }
+        public string StrField { get; set; }
+    }
+
+    public class TableGuidType
+    {
+        public int Id { get; set; }
+        public Guid uid { get; set; }
+    }
+
+    public class DataTypesSimple
 	{
 		public int Id { get; set; }
 

@@ -1,1 +1,1 @@
-<Playlist Version="1.0" />
+<Playlist Version="1.0"><Add Test="EFCore.Firebird.FunctionalTests.Tests.Models.DataTypesTest.CheckGUIDRead (ff02584436bf7c67dca113db68b7b9f612297d98)" /></Playlist>

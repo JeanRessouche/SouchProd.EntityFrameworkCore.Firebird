@@ -15,9 +15,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FirebirdSqlSqlGenerationHelper : RelationalSqlGenerationHelper
     {
-        public FirebirdSqlSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies)
+        public FirebirdSqlSqlGenerationHelper(
+            [NotNull] RelationalSqlGenerationHelperDependencies dependencies
+        )
             : base(dependencies)
         {
+
         }
 
         /// <summary>
@@ -58,6 +61,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             builder.Append('"');
         }
 
+
+
         //
         // Summary:
         //     Generates a valid parameter name for the given candidate name.
@@ -70,8 +75,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         //     A valid name based on the candidate name.
         public override string GenerateParameterName(string name)
             => $"@{name}";
-
-
         //
         // Summary:
         //     Writes a valid parameter name for the given candidate name.
@@ -84,8 +87,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         //     The candidate name for the parameter.
         public override void GenerateParameterName(StringBuilder builder, string name)
             => builder.Append("@").Append(name);
-
-
 
         public static object GenerateValue(ColumnModification column)
         {
@@ -122,14 +123,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             builder.Append(GenerateValue(column));
         }
 
-
-
-
-        public static object GetTypeColumnToString(ColumnModification column)
+        public static object GetTypeColumnToString(ColumnModification column, IRelationalTypeMapper mapper)
         {
-            return "VARCHAR(100)";
+            var mapping = mapper.FindMapping(column.Property);
+            return mapping.StoreType;//"VARCHAR(100)";
         }
-
 
     }
 }

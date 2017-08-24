@@ -15,8 +15,16 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		// blog
 		public DbSet<Blog> Blogs { get; set; }
 
-		// crm
-		public DbSet<CrmAdmin> CrmAdmins { get; set; }
+        public DbSet<TableGuidType> TableGuidType { get; set; }
+
+        public DbSet<TableDoubleType> TableDoubleType { get; set; }
+
+        public DbSet<TableIntType> TableIntType { get; set; }
+
+        public DbSet<TableStringType> TableStringType { get; set; }
+
+        // crm
+        public DbSet<CrmAdmin> CrmAdmins { get; set; }
 		public DbSet<CrmRole> CrmRoles { get; set; }
 		public DbSet<CrmMenu> CrmMenus { get; set; }
 
