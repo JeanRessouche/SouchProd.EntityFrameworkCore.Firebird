@@ -2,22 +2,32 @@
 
 # SouchProd.EntityFrameworkCore.Firebird
 
-SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider built on top of the Firebird ADO.NET Data Provider. It enables use the Entity Framework Core ORM with Firebird (2.1, 2.5, 3.0).
+SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider built on top of the Firebird ADO.NET Data Provider. It enables use the Entity Framework Core 2.0 ORM with Firebird (2.x, 3.0) and Interbase.
 
 ## Status
 
 Work in progress at an early stage**, **not** production ready, **not** beta ready.
 
+  - Last inserted id  propagation to the entity after an insert not yet supported.
+  
+  - BLOB & CLOB not yet supported.
+
+  - Scaffolding not yet supported.
+
+  - Migrations not yet supported.
+  
+  - Nuget package not yet available.
+
 ## Roadmap
 
-Version                | EF Core version | Content | Status
-------------|------------|------------|------------
-2.0 Preview 1 | 2.0 | First release, read/write support limited to basic field types | Available
-2.0 Preview 2 | 2.0 | Last inserted id support | In progress
-2.0 Preview 3 | 2.0 | Read/Write support for all the Firebird data types  | In progress
-2.0 Preview 4 | 2.0 | Scaffolding support | Scheduled
-2.0 Preview 5 | 2.0 | Migration support | Scheduled
-2.0 Final | 2.0 | Cleanup, refactoring and perf tuning | Scheduled
+Version | Content | Status
+------------|------------|------------
+2.0 Preview 1 | First release, read/write support limited to basic field types | :heavy_check_mark: Available
+2.0 Preview 2 | Last inserted id support | :fire: In progress
+2.0 Preview 3 | Read/Write support for all the Firebird data types | :fire: In progress
+2.0 Preview 4 | Scaffolding support | :date: Scheduled
+2.0 Preview 5 | Migration support | :date: Scheduled
+2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## Contributing 
 
