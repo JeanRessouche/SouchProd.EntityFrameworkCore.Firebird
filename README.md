@@ -1,4 +1,5 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=Build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget] 
+
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget] [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
 # SouchProd.EntityFrameworkCore.Firebird
 
@@ -7,11 +8,7 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 ## Status
 
 Work in progress at an early stage**, **not** production ready, **not** beta ready.
-
-  - ~~Last inserted id  propagation to the entity after an insert not yet supported.~~
-  
-  - ~~Guid fields not yet supported~~.
-  
+ 
   - BLOB & CLOB only partially supported.
 
   - Scaffolding not yet supported.
@@ -53,5 +50,6 @@ This project benefit also from the great work made on the [Pomelos MySql EF Core
 ## License
 
 [MIT](https://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
+
 [main-nuget]: https://www.nuget.org/packages/SouchProd.EntityFrameworkCore.Firebird/
 [main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget 
