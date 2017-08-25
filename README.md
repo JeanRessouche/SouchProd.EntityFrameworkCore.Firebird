@@ -1,4 +1,4 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=travis-ci&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget]
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=Build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget] 
 
 # SouchProd.EntityFrameworkCore.Firebird
 
@@ -22,9 +22,9 @@ Work in progress at an early stage**, **not** production ready, **not** beta rea
 
 Version | Content | Status
 ------------|------------|------------
-2.0 Preview 1 | First release, read/write support limited to basic field types | :heavy_check_mark: Available
-2.0 Preview 2 | Last inserted id support | :heavy_check_mark: Available
-2.0 Preview 3 | Cast, Substring, Replace, Math & other Linq/Db functions support | :heavy_check_mark: Available
+**2.0 Preview 1** | **First release, read/write support limited to basic field types** | **:heavy_check_mark: Available**
+**2.0 Preview 2** | **Last inserted id support** | **:heavy_check_mark: Available**
+**2.0 Preview 3** | **Cast, Substring, Replace, Math & other Linq/Db functions support** | **:heavy_check_mark: Available**
 2.0 Preview 4 | Read/Write support for the BLOB & CLOB fields | :fire: In progress
 2.0 Preview 5 | Scaffolding support | :date: Scheduled
 2.0 Preview 6 | Migration support | :date: Scheduled
@@ -32,7 +32,7 @@ Version | Content | Status
 
 ## Dependencies 
 
-The nuget package SouchProd.Data.FirebirdClient is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly t support .Net standard 2.
+The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/packages/SouchProd.Data.FirebirdClient/) is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly t support .Net standard 2.
 
 ## Contributing 
 
@@ -53,6 +53,5 @@ This project benefit also from the great work made on the [Pomelos MySql EF Core
 ## License
 
 [MIT](https://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
-
 [main-nuget]: https://www.nuget.org/packages/SouchProd.EntityFrameworkCore.Firebird/
-[main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?style=flat-square&label=nuget 
+[main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget 
