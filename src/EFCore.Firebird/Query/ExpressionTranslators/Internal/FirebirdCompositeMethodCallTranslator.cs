@@ -23,7 +23,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             new FirebirdMathTranslator(),
             new FirebirdNewGuidTranslator(),
             new FirebirdObjectToStringTranslator(),
-            new FirebirdRegexIsMatchTranslator(),
             new FirebirdStartsWithOptimizedTranslator(),
             new FirebirdStringIsNullOrWhiteSpaceTranslator(),
             new FirebirdStringReplaceTranslator(),

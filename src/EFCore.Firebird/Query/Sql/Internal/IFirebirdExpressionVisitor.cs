@@ -13,6 +13,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 {
     public interface IFirebirdExpressionVisitor
     {
-        Expression VisitRegexp([NotNull] RegexpExpression regexpExpression);
+        Expression VisitSubString([NotNull] SubStringExpression substringExpression);
     }
 }

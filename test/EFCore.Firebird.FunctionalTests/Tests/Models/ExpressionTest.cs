@@ -136,28 +136,15 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
         [Fact]
         public async Task FirebirdDateTimeNowTranslator()
         {
-            var utcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.Now);
-            var utcOffsetStr = (utcOffset.TotalHours >= 0 ? "+" : "") + utcOffset.TotalHours.ToString("00") + ":" + utcOffset.Minutes.ToString("00");
-
             await _db.Database.OpenConnectionAsync();
-            await _db.Database.ExecuteSqlCommandAsync("SET @@session.time_zone = @timeZone", parameters: new object[]{new FbParameter
-            {
-                ParameterName = "@timeZone",
-                DbType = DbType.String,
-                Value = utcOffsetStr,
-            }});
-
             var result = await _db.DataTypesSimple.Select(m =>
                 new {
                     Id = m.Id,
-                    Now = DateTime.Now,
-                    UtcNow = DateTime.UtcNow
+                    Now = DateTime.Now
                 }).FirstOrDefaultAsync(m => m.Id == _simple.Id);
 
             _db.Database.CloseConnection();
-
             Assert.InRange(result.Now, DateTime.Now - TimeSpan.FromSeconds(5), DateTime.Now + TimeSpan.FromSeconds(5));
-            Assert.InRange(result.UtcNow, DateTime.UtcNow - TimeSpan.FromSeconds(5), DateTime.UtcNow + TimeSpan.FromSeconds(5));
         }
 
         [Fact]
@@ -247,20 +234,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
         }
 
         [Fact]
-        public async Task FirebirdRegexIsMatchTranslator()
-        {
-            var result = await _db.DataTypesVariable.Select(m =>
-                new {
-                    Id = m.Id,
-                    Match = Regex.IsMatch(m.TypeString, @"^Entity[a-zA-Z]{9}$"),
-                    NotMatch = Regex.IsMatch(m.TypeString, @"^Entity[a-zA-Z]{8}$")
-                }).FirstOrDefaultAsync(m => m.Id == _variable.Id);
-
-            Assert.True(result.Match);
-            Assert.False(result.NotMatch);
-        }
-
-        [Fact]
         public async Task FirebirdStartsWithOptimizedTranslator()
         {
             var result = await _db.DataTypesVariable.Select(m =>
@@ -319,10 +292,10 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
             var result = await _db.DataTypesVariable.Select(m =>
                 new {
                     Id = m.Id,
-                    Lower = m.TypeString.ToLower()
+                    ToLower = m.TypeString.ToLower()
                 }).FirstOrDefaultAsync(m => m.Id == _variable.Id);
 
-            Assert.Equal("entityframework", result.Lower);
+            Assert.Equal("entityframework", result.ToLower);
         }
 
         [Fact]

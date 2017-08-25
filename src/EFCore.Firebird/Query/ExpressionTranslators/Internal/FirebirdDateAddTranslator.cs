@@ -58,12 +58,13 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 }
 
                 return new SqlFunctionExpression(
-                    functionName: "DATE_ADD",
+                    functionName: "DATEADD",
                     returnType: methodCallExpression.Type,
                     arguments: new[]
                     {
-                        methodCallExpression.Object,
-                        new SqlFragmentExpression("INTERVAL " + amountToAdd + " " + datePart),
+                        new SqlFragmentExpression(datePart),
+                        amountToAdd,
+                        methodCallExpression.Object
                     });
             }
 

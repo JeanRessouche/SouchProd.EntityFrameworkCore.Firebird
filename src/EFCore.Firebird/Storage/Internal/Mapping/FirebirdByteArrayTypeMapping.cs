@@ -38,7 +38,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         }
 
         private static int CalculateSize(int? size)
-            => size.HasValue && size < 8000 ? size.Value : 8000;
+            => size.HasValue && size < 80000 ? size.Value : 80000;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -60,13 +60,19 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             // 8000 bytes if no size facet specified, if the data will fit so as to avoid query cache
             // fragmentation by setting lots of different Size values otherwise always set to 
             // -1 (unbounded) to avoid SQL client size inference.
+            try { 
+                var value = parameter.Value;
+                var length = (value as string)?.Length ?? (value as byte[])?.Length;
 
-            var value = parameter.Value;
-            var length = (value as string)?.Length ?? (value as byte[])?.Length;
-
-            parameter.Size = value == null || value == DBNull.Value || length != null && length <= _maxSpecificSize
-                ? _maxSpecificSize
-                : -1;
+                parameter.Size = value == null || value == DBNull.Value || length != null && length <= _maxSpecificSize
+                    ? _maxSpecificSize
+                    : -1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FirebirdByarrayTypeMapping => ConfigureParameter => " + e.Message);
+                throw;
+            }
         }
 
         /// <summary>

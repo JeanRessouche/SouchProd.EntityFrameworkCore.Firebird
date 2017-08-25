@@ -86,7 +86,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
             }
         }
 
-        public override string ToString() => $"{Match} REGEXP {Pattern}";
+        public override string ToString() => $"{Match} SIMILAR TO {Pattern}";
         
     }
     

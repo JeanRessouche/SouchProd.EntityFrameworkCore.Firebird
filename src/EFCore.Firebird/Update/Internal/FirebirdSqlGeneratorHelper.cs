@@ -28,7 +28,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override string EscapeIdentifier(string identifier)
-            => Check.NotEmpty(identifier, nameof(identifier));
+            => Check.NotEmpty(identifier, nameof(identifier)).Replace("\"", "\"\"");
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -37,9 +37,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override void EscapeIdentifier(StringBuilder builder, string identifier)
         {
             Check.NotEmpty(identifier, nameof(identifier));
-
             var initialLength = builder.Length;
             builder.Append(identifier);
+            builder.Replace("\"", "\"\"", initialLength, identifier.Length);
             //builder.Replace("", "", initialLength, identifier.Length);
         }
 
@@ -48,7 +48,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override string DelimitIdentifier(string identifier)
-            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier)))}\""; // Interpolation okay; strings
+            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier))).ToUpperInvariant()}\""; // Interpolation okay; strings
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -57,11 +57,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             Check.NotEmpty(identifier, nameof(identifier));
             builder.Append('"');
-            EscapeIdentifier(builder, identifier);
+            EscapeIdentifier(builder, identifier.ToUpperInvariant());
             builder.Append('"');
         }
-
-
 
         //
         // Summary:

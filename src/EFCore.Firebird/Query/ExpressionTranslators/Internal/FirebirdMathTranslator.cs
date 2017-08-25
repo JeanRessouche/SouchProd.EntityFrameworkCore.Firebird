@@ -92,7 +92,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 }
 
                 return new SqlFunctionExpression(
-                    "TRUNCATE",
+                    "TRUNC",
                     methodCallExpression.Type,
                     new[] { firstArgument, Expression.Constant(0) });
             }

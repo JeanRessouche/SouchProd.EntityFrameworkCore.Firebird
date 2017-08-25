@@ -33,15 +33,15 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    private readonly ULongTypeMapping _ubigint          = new ULongTypeMapping("bigint", DbType.UInt64);
 
 	    // decimals
-	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(13,4)", DbType.Decimal);
+	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(18,4)", DbType.Decimal);
 	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
         private readonly FloatTypeMapping _float            = new FloatTypeMapping("float");
 
 	    // binary
 	    private readonly RelationalTypeMapping _binary           = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
         private readonly RelationalTypeMapping _varbinary        = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
-	    private readonly FirebirdByteArrayTypeMapping _varbinary767 = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 767", DbType.Binary, 767);
-	    private readonly RelationalTypeMapping _varbinarymax     = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 16384", DbType.Binary);
+	    private readonly FirebirdByteArrayTypeMapping _varbinary767 = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary, 767);
+	    private readonly RelationalTypeMapping _varbinarymax     = new FirebirdByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
 
 	    // string
         private readonly FirebirdStringTypeMapping _char            = new FirebirdStringTypeMapping("char", DbType.AnsiStringFixedLength);
@@ -76,47 +76,47 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "bit", _bit },
 
                     // integers
-                    { "tinyint", _tinyint },
-                    { "tinyint unsigned", _utinyint },
+                   // { "tinyint", _tinyint },
+                   // { "tinyint unsigned", _utinyint },
                     { "smallint", _smallint },
-                    { "smallint unsigned", _usmallint },
-                    { "mediumint", _int },
-                    { "mediumint unsigned", _uint },
-                    { "int", _int },
-                    { "int unsigned", _uint },
+                   // { "smallint unsigned", _usmallint },
+                   // { "mediumint", _int },
+                   // { "mediumint unsigned", _uint },
+                    { "integer", _int },
+                   // { "int unsigned", _uint },
                     { "bigint", _bigint },
-                    { "bigint unsigned", _ubigint },
+                    //{ "bigint unsigned", _ubigint },
 
                     // decimals
-                    { "decimal", _decimal },
+                    { "decimal(18,4)", _decimal },
                     { "DOUBLE PRECISION", _double },
                     { "float", _float },
 
                     // TODO
                     // binary
-                    { "binary", _binary },
-                    { "varbinary", _varbinary },
-                    { "tinyblob", _varbinarymax },
-                    { "blob", _varbinarymax },
-                    { "mediumblob", _varbinarymax },
-                    { "longblob", _varbinarymax },
+                    { "BLOB SUB_TYPE 0", _binary },
+                    //{ "varbinary", _varbinary },
+                    //{ "tinyblob", _varbinarymax },
+                   // { "blob", _varbinarymax },
+                   // { "mediumblob", _varbinarymax },
+                   // { "longblob", _varbinarymax },
 
                     // string
                     { "char", _char },
                     { "varchar", _varchar },
 
                     // TODO
-                    { "tinytext", _varcharmax },
-                    { "text", _varcharmax },
-                    { "mediumtext", _varcharmax },
-                    { "longtext", _varcharmax },
+                    { "BLOB SUB_TYPE 1", _json },
+                   // { "text", _varcharmax },
+                   // { "mediumtext", _varcharmax },
+                   // { "longtext", _varcharmax },
 
                     // DateTime
                     { "time", _time },
                     { "timestamp", _timeStamp },
 
                     // json
-                    { "json", _json },
+                   // { "json", _json },
 
                     // guid
                     { "char(38)", _uniqueidentifier }
@@ -174,9 +174,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     _varbinarymax,
                     _varbinary767,
                     _rowversion, size => new FirebirdByteArrayTypeMapping(
-                        "varbinary(" + size + ")",
-                        DbType.Binary,
-                        size));
+                        "BLOB SUB_TYPE 0 SEGMENT SIZE 80",
+                        DbType.Binary));
 
             StringMapper
                 = new StringRelationalTypeMapper(

@@ -33,6 +33,16 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
         }
 
         [Fact]
+        public void ServerVersion()
+        {
+            using (var db = NewDbContext(false))
+            {
+                db.Database.OpenConnection();
+                Assert.NotEmpty(db.Database.GetDbConnection().ServerVersion);
+            }
+        }
+
+        [Fact]
         public void RawQueryExecute()
         {
             using (var db = NewDbContext(false))
@@ -122,6 +132,31 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connectio
                 await db.SaveChangesAsync();
             }
             Assert.Equal(blog.Id, sameBlog.Id);
+        }
+
+        /// <summary>
+        /// Check if the delimiters are correctly set to avoid errors due to the use of reserved words in column namming.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task FirebirdReservedWordUsage()
+        {
+            using (var db = NewDbContext(false))
+            {
+                var result = await db.DataTypesSimple.Select(m =>
+                    new
+                    {
+                        Id = m.Id,
+                        Year = m.TypeDateTime.Year,
+                        Month = m.TypeDateTime.Month,
+                        Day = m.TypeDateTime.Day,
+                        Hour = m.TypeDateTime.Hour,
+                        Minute = m.TypeDateTime.Minute,
+                        Second = m.TypeDateTime.Second,
+                    }).FirstOrDefaultAsync();
+
+                Assert.NotNull(result);
+            }
         }
 
     }

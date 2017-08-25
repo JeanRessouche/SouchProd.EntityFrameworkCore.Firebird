@@ -35,7 +35,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                             new[]
                             {
                                 methodCallExpression.Object,
-                                new SqlFunctionExpression("LENGTH", typeof(int), new[] { patternExpression })
+                                new SqlFunctionExpression("CHAR_LENGTH", typeof(int), new[] { patternExpression })
                             }),
                         patternExpression));
 

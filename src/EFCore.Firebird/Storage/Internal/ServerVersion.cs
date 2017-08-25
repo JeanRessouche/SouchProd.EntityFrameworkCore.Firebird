@@ -35,8 +35,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public readonly Version Version;
 
-        public bool SupportsDateTime6 => Version >= new Version(2,1);
-
         public bool SupportsRenameIndex
         {
             get
@@ -45,8 +43,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 {
                     return Version >= new Version(2,1);
                 }
-                
-                // TODO Awaiting feedback from Mariadb on when they will support rename index!
                 return false;
             }
         }

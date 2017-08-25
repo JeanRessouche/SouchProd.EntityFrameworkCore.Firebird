@@ -25,10 +25,13 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             if (memberExpression.Expression == null
                 && memberExpression.Member.DeclaringType == typeof(DateTime))
             {
+                
                 //switch (memberExpression.Member.Name)
                 //{
                 //    case nameof(DateTime.Now):
-                        return new SqlFunctionExpression("CURRENT_TIMESTAMP", memberExpression.Type);
+                return
+                    new SqlFragmentExpression(
+                        "CURRENT_TIMESTAMP"); //new SqlFunctionExpression("CURRENT_TIMESTAMP", memberExpression.Type);
                 // Not yet supported by FB
                 // http://tracker.firebirdsql.org/browse/CORE-694
                 //    case nameof(DateTime.UtcNow):

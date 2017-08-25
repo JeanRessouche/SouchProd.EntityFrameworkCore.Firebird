@@ -101,7 +101,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 		[MaxLength(255)]
 		public string TypeString255N { get; set; }
 
-
 		// binary not null
 		[Required]
 		[MaxLength(255)]
@@ -116,7 +115,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 
 		public byte[] TypeByteArrayN    { get; set; }
 
-
 		// json not null
 		[Required]
 		public JsonObject<List<string>>               TypeJsonArray   { get; set; }
@@ -128,7 +126,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 		public JsonObject<List<string>>               TypeJsonArrayN  { get; set; }
 
 		public JsonObject<Dictionary<string, string>> TypeJsonObjectN { get; set; }
-
 
 	    // static method to create a new empty object
 	    public static readonly byte[] EmptyByteArray = new byte[0];

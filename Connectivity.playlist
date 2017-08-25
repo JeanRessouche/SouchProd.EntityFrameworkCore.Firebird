@@ -1,1 +1,1 @@
-<Playlist Version="1.0"><Add Test="SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connection.ConnectionTest.ContextCreation (569c7def7e57ebd5949362513a1398ba8e436661)" /></Playlist>
+<Playlist Version="1.0"><Add Test="SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connection.ConnectionTest.ContextCreation (569c7def7e57ebd5949362513a1398ba8e436661)" /><Add Test="SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connection.ConnectionTest.ServerVersion (347edf46f01c5e390f5935ac52bb306a9d1938b9)" /></Playlist>

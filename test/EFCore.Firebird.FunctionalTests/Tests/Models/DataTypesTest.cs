@@ -208,7 +208,7 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
             // Load them from the database and run tests
             using (var db = new AppDb())
             {
-                var item = db.DataTypesSimple.FirstOrDefault();
+                var item = db.DataTypesSimple.FirstOrDefault(x=>x.Id == emptyMemSync.Id);
                 TestEmpty(item);
             }
         }
@@ -315,7 +315,7 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
 	        }
 
 	        var string255 = new string('a', 255);
-            var string10K = new string('a', 10000);
+            var string4K = new string('a', 4000);
 
             var byte255 = new byte[255];
             var byte10K = new byte[10000];
@@ -333,34 +333,37 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
 	        DataTypesVariable NewValueMem() => new DataTypesVariable
 	        {
 	            // string not null
-	            TypeString = string10K,
+	            TypeString = string4K,
 	            TypeString255 = string255, // should be truncated by DBMS
-	            // string null
-	            TypeStringN = string10K,
-	            TypeString255N = string255, // should be truncated by DBMS
+                
+                // string null
+                TypeStringN = string4K,
+                TypeString255N = string255, // should be truncated by DBMS
 
-	            // binary not null
-	            TypeByteArray = byte10K,
-	            TypeByteArray255 = byte255, // should be truncated by DBMS
-	            // binary null
-	            TypeByteArrayN = byte10K,
-	            TypeByteArray255N = byte255, // should be truncated by DBMS
+                // binary not null
+                TypeByteArray = byte10K,
+                TypeByteArray255 = byte255, // should be truncated by DBMS
+                
+                // binary null
+                TypeByteArrayN =  byte10K,
+                TypeByteArray255N = byte255, // should be truncated by DBMS
 
-	            // json not null
-	            TypeJsonArray = jsonArray,
+                // json not null
+                TypeJsonArray = jsonArray,
 	            TypeJsonObject = jsonObject,
-	            // json null
-	            TypeJsonArrayN = jsonArray,
-	            TypeJsonObjectN = jsonObject,
-	        };
+                
+                // json null
+                TypeJsonArrayN = jsonArray,
+                TypeJsonObjectN = jsonObject,
+            };
 
 	        void TestValue(DataTypesVariable valueDb)
 	        {
 	            // string not null
-	            Assert.Equal(string10K, valueDb.TypeString);
+	            Assert.Equal(string4K, valueDb.TypeString);
 	            Assert.Equal(string255, valueDb.TypeString255);
 	            // string null
-	            Assert.Equal(string10K, valueDb.TypeStringN);
+	            Assert.Equal(string4K, valueDb.TypeStringN);
 	            Assert.Equal(string255, valueDb.TypeString255N);
 
 	            // binary not null
@@ -535,7 +538,6 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
                 Assert.Equal(uid.StrField, this.GetType().ToString());
             }
         }
-
 
     }
 }

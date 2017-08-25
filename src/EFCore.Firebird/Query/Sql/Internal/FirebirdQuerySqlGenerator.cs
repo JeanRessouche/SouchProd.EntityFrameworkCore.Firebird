@@ -7,10 +7,12 @@
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
+using System.Linq;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
@@ -21,8 +23,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
     /// </summary>
     public class FirebirdQuerySqlGenerator : DefaultQuerySqlGenerator, IFirebirdExpressionVisitor
     {
-        protected override string TypedTrueLiteral => "TRUE";
-        protected override string TypedFalseLiteral => "FALSE";
+        protected override string TypedTrueLiteral => "'TRUE'";
+        protected override string TypedFalseLiteral => "'FALSE'";
+
+        private IRelationalCommandBuilder _relationalCommandBuilder;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -107,12 +111,13 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
                 binaryExpression.Left.Type == typeof (string) &&
                 binaryExpression.Right.Type == typeof (string))
             {
-                Sql.Append("CONCAT(");
+                Sql.Append("(");
                 //var exp = base.VisitBinary(binaryExpression);
                 Visit(binaryExpression.Left);
-                Sql.Append(",");
+                Sql.Append(" || ");
                 var exp = Visit(binaryExpression.Right);
                 Sql.Append(")");
+                
                 return exp;
             }
             
@@ -120,14 +125,23 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             
             return expr;
         }
-        
-        public virtual Expression VisitRegexp(RegexpExpression regexpExpression)
+
+        public virtual Expression VisitSubString(SubStringExpression substringExpression)
         {
-            Check.NotNull(regexpExpression, nameof(regexpExpression));
-            Visit(regexpExpression.Match);
-            Sql.Append(" REGEXP ");
-            Visit(regexpExpression.Pattern);
-            return regexpExpression;
+            Check.NotNull(substringExpression, nameof(substringExpression));
+
+            Sql.Append(" SUBSTRING(");
+            Visit(substringExpression.SubjectExpression);
+            Sql.Append(" FROM ");
+            Visit(substringExpression.FromExpression);
+            Sql.Append(" FOR ");
+            Visit(substringExpression.ForExpression);
+            Sql.Append(")");
+
+            //$"SUBSTRING({SubjectExpression} FROM {FromExpression} FOR {ForExpression})";
+
+            return substringExpression;
         }
+
     }
 }
