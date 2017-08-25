@@ -28,8 +28,9 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                     memberExpression.Type,
                     new[]
                     {
-                        memberExpression.Expression,
-                        new SqlFragmentExpression("date")
+                        new SqlFragmentExpression(memberExpression.Expression + " AS date")
+                        //memberExpression.Expression,
+                        //new SqlFragmentExpression("date")
                     })
                 : null;
     }

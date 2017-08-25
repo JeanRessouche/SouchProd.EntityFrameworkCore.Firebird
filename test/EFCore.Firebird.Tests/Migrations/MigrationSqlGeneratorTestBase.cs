@@ -238,7 +238,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Name = "People",
                     Schema = "", // "dbo",
                     NewName = "Personas",
-                    NewSchema = "dbo"
+                    NewSchema = ""
                 });
         }
 
@@ -383,7 +383,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                             Name = "Id",
                             Table = "TestUlongAutoIncrement",
                             ClrType = typeof(ulong),
-                            ColumnType = "bigint unsigned",
+                            ColumnType = "bigint",
                             IsNullable = false,
                             [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                         }
@@ -427,7 +427,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 {
                     Name = "IX_People_Name",
                     Table = "People",
-                    Schema = "dbo"
+                    Schema = ""
                 });
         }
 
@@ -438,7 +438,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropPrimaryKeyOperation
                 {
                     Table = "People",
-                    Schema = "", // "dbo",
+                    Schema = "",
                     Name = "PK_People"
                 });
         }
@@ -450,7 +450,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 new DropTableOperation
                 {
                     Name = "People",
-                    Schema = "dbo"
+                    Schema = ""
                 });
         }
 

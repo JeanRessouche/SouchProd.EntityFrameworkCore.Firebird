@@ -23,24 +23,24 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
         private static readonly Dictionary<Type, string> _typeMapping
             = new Dictionary<Type, string>
             {
-                { typeof(int), "CHAR(11)" },
-                { typeof(long), "CHAR(20)" },
-                { typeof(DateTime), $"CHAR({DefaultLength})" },
-                { typeof(Guid), "CHAR(36)" },
-                { typeof(bool), "CHAR(5)" },
-                { typeof(byte), "CHAR(3)" },
-                { typeof(byte[]), $"CHAR({DefaultLength})" },
-                { typeof(double), $"CHAR({DefaultLength})" },
-                { typeof(DateTimeOffset), $"CHAR({DefaultLength})" },
-                { typeof(char), "CHAR(1)" },
-                { typeof(short), "CHAR(6)" },
-                { typeof(float), $"CHAR({DefaultLength})" },
-                { typeof(decimal), $"CHAR({DefaultLength})" },
-                { typeof(TimeSpan), $"CHAR({DefaultLength})" },
-                { typeof(uint), "CHAR(10)" },
-                { typeof(ushort), "CHAR(5)" },
-                { typeof(ulong), "CHAR(19)" },
-                { typeof(sbyte), "CHAR(4)" }
+                { typeof(int), "VARCHAR(11)" },
+                { typeof(long), "VARCHAR(20)" },
+                { typeof(DateTime), $"VARCHAR({DefaultLength})" },
+                { typeof(Guid), "VARCHAR(36)" },
+                { typeof(bool), "VARCHAR(5)" },
+                { typeof(byte), "VARCHAR(3)" },
+                { typeof(byte[]), $"VARCHAR({DefaultLength})" },
+                { typeof(double), $"VARCHAR({DefaultLength})" },
+                { typeof(DateTimeOffset), $"VARCHAR({DefaultLength})" },
+                { typeof(char), "VARCHAR(1)" },
+                { typeof(short), "VARCHAR(6)" },
+                { typeof(float), $"VARCHAR({DefaultLength})" },
+                { typeof(decimal), $"VARCHAR({DefaultLength})" },
+                { typeof(TimeSpan), $"VARCHAR({DefaultLength})" },
+                { typeof(uint), "VARCHAR(10)" },
+                { typeof(ushort), "VARCHAR(5)" },
+                { typeof(ulong), "VARCHAR(19)" },
+                { typeof(sbyte), "VARCHAR(4)" }
             };
 
         /// <summary>
@@ -67,8 +67,9 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                     returnType: methodCallExpression.Type,
                     arguments: new[]
                     {
-                        methodCallExpression.Object,
-                        new SqlFragmentExpression(storeType),
+                        new SqlFragmentExpression(methodCallExpression.Object + " AS " + storeType)
+                        //methodCallExpression.Object,
+                        //new SqlFragmentExpression(storeType),
                     });
             }
 

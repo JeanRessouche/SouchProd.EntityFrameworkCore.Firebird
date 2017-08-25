@@ -200,7 +200,7 @@ group by
         {
             foreach (var x in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetPrimaryQuery, x.Key.Replace("`", "")), _connection))
+                using (var command = new FbCommand(string.Format(GetPrimaryQuery, x.Key.Replace("\"", "")), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {

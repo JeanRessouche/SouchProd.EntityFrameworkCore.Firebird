@@ -1,10 +1,7 @@
 using System;
-using System.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
@@ -30,24 +27,23 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 FirebirdOptions
                     .Setup(fn =>
                         fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Returns(@"
-CREATE TABLE `People` (
- `Id` int(11) NOT NULL AUTO_INCREMENT,
- `Discriminator` varchar(63) NOT NULL,
- `FamilyId` int(11) DEFAULT NULL,
- `Name` longtext,
- `TeacherId` int(11) DEFAULT NULL,
- `Grade` int(11) DEFAULT NULL,
- `Occupation` longtext,
- `OnPta` bit(1) DEFAULT NULL,
- PRIMARY KEY (`Id`),
- KEY `IX_People_FamilyId` (`FamilyId`),
- KEY `IX_People_Discriminator` (`Discriminator`),
- KEY `IX_People_TeacherId` (`TeacherId`),
- CONSTRAINT `FK_People_PeopleFamilies_FamilyId` FOREIGN KEY (`FamilyId`) REFERENCES `PeopleFamilies` (`Id`) ON DELETE NO ACTION,
- CONSTRAINT `FK_People_People_TeacherId` FOREIGN KEY (`TeacherId`) REFERENCES `People` (`Id`) ON DELETE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-");
+                    .Returns(
+"CREATE TABLE \"People\" (" +
+" \"Id\" int(11) NOT NULL AUTO_INCREMENT," +
+" \"Discriminator\" varchar(63) NOT NULL," +
+" \"FamilyId\" int(11) DEFAULT NULL," +
+" \"Name\" longtext," +
+" \"TeacherId\" int(11) DEFAULT NULL," +
+" \"Grade\" int(11) DEFAULT NULL," +
+" \"Occupation\" longtext," +
+" \"OnPta\" bit(1) DEFAULT NULL," +
+" PRIMARY KEY (\"Id\")," +
+" KEY \"IX_People_FamilyId\" (\"FamilyId\")," +
+" KEY \"IX_People_Discriminator\" (\"Discriminator\")," +
+" KEY \"IX_People_TeacherId\" (\"TeacherId\")," +
+" CONSTRAINT \"FK_People_PeopleFamilies_FamilyId\" FOREIGN KEY (\"FamilyId\") REFERENCES \"PeopleFamilies\" (\"Id\") ON DELETE NO ACTION," +
+" CONSTRAINT \"FK_People_People_TeacherId\" FOREIGN KEY (\"TeacherId\") REFERENCES \"People\" (\"Id\") ON DELETE NO ACTION" +
+" ) ENGINE=InnoDB DEFAULT CHARSET=latin1");
                 
                 // type mapper
                 var typeMapper = new FirebirdSmartTypeMapper(new RelationalTypeMapperDependencies(), FirebirdOptions.Object);
@@ -86,8 +82,8 @@ CREATE TABLE `People` (
         {
             base.RenameIndexOperation_works();
             
-            Assert.Equal("ALTER TABLE `People` DROP INDEX `IX_People_Discriminator`;" + EOL 
-                         + "ALTER TABLE `People` ADD KEY `IX_People_DiscriminatorNew` (`Discriminator`);" + EOL,
+            Assert.Equal("ALTER TABLE \"PEOPLE\" DROP INDEX \"IX_PEOPLE_DISCRIMINATOR\";" + EOL 
+                         + "ALTER TABLE \"PEOPLE\" ADD KEY \"IX_PEOPLE_DISCRIMINATORNEW\" (\"DISCRIMINATOR\");" + EOL,
                 Sql);
         }
 
@@ -105,7 +101,7 @@ CREATE TABLE `People` (
             });
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `Birthday` datetime NOT NULL DEFAULT '" + new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified).ToString("yyyy-MM-dd HH:mm:ss") + "';" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" datetime NOT NULL DEFAULT '" + new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified).ToString("yyyy-MM-dd HH:mm:ss") + "';" + EOL,
                 Sql);
         }
     }

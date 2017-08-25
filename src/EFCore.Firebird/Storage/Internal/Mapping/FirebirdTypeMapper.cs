@@ -112,6 +112,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                    // { "longtext", _varcharmax },
 
                     // DateTime
+                    { "date", _timeStamp },
                     { "time", _time },
                     { "timestamp", _timeStamp },
 

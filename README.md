@@ -1,4 +1,4 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=travis-ci&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=travis-ci&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget]
 
 # SouchProd.EntityFrameworkCore.Firebird
 
@@ -12,22 +12,20 @@ Work in progress at an early stage**, **not** production ready, **not** beta rea
   
   - ~~Guid fields not yet supported~~.
   
-  - BLOB & CLOB not yet supported.
+  - BLOB & CLOB only partially supported.
 
   - Scaffolding not yet supported.
 
   - Migrations not yet supported.
   
-  - Nuget package not yet available.
-
 ## Roadmap
 
 Version | Content | Status
 ------------|------------|------------
 2.0 Preview 1 | First release, read/write support limited to basic field types | :heavy_check_mark: Available
 2.0 Preview 2 | Last inserted id support | :heavy_check_mark: Available
-2.0 Preview 3 | Read/Write support for all the Firebird data types | :fire: In progress
-2.0 Preview 4 | Cast, Math & other Linq/Db functions support | :date: Scheduled
+2.0 Preview 3 | Cast, Substring, Replace, Math & other Linq/Db functions support | :heavy_check_mark: Available
+2.0 Preview 4 | Read/Write support for the BLOB & CLOB fields | :fire: In progress
 2.0 Preview 5 | Scaffolding support | :date: Scheduled
 2.0 Preview 6 | Migration support | :date: Scheduled
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
@@ -41,9 +39,9 @@ The nuget package SouchProd.Data.FirebirdClient is currently required. It will b
 Wanna add a feature, fix a bug or improve my crappy code ? 
 
 1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
+2. Create your feature branch: \"git checkout -b my-new-feature\"
+3. Commit your changes: \"git commit -am 'Add some feature'\"
+4. Push to the branch: \"git push origin my-new-feature\"
 5. Submit a pull request :D
 
 ## Credits
@@ -55,3 +53,6 @@ This project benefit also from the great work made on the [Pomelos MySql EF Core
 ## License
 
 [MIT](https://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
+
+[main-nuget]: https://www.nuget.org/packages/SouchProd.EntityFrameworkCore.Firebird/
+[main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?style=flat-square&label=nuget 

@@ -7,7 +7,6 @@
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -80,7 +79,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 
                 return sqlFunctionExpression;
             }
-
             return base.VisitSqlFunction(sqlFunctionExpression);
         }
 
@@ -141,6 +139,11 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             //$"SUBSTRING({SubjectExpression} FROM {FromExpression} FOR {ForExpression})";
 
             return substringExpression;
+        }
+
+        protected override Expression VisitUnary(UnaryExpression expression)
+        {
+            return expression;
         }
 
     }

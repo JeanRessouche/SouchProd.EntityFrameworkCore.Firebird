@@ -92,18 +92,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public override Task<bool> ReadAsync(CancellationToken cancellationToken) => GetReader().ReadAsync(cancellationToken);
 
-#if NET45
-		public override DataTable GetSchemaTable()
-		{
-			throw new NotSupportedException();
-		}
-
-		public override void Close()
-		{
-			CloseReader();
-		}
-#endif
-
         public override T GetFieldValue<T>(int ordinal)
         {
             try

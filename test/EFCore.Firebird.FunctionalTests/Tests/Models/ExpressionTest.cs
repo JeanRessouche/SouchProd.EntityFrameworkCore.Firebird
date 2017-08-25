@@ -22,7 +22,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
         public ExpressionTest()
         {
             _db = new AppDb();
-
+/*
             // initialize simple data types
             _simple = new DataTypesSimple
             {
@@ -45,16 +45,16 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
             _variable.TypeString = "EntityFramework";
 
             _db.DataTypesVariable.Add(_variable);
-            _db.SaveChanges();
+            _db.SaveChanges();*/
         }
 
         public void Dispose()
         {
             try
             {
-                _db.DataTypesSimple.Remove(_simple);
+              /*  _db.DataTypesSimple.Remove(_simple);
                 _db.DataTypesVariable.Remove(_variable);
-                _db.SaveChanges();
+                _db.SaveChanges();*/
             }
             finally
             {
@@ -362,11 +362,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
                 ConvertedByte = m.TypeByte.ToString(),
                 ConvertedSByte = m.TypeSbyte.ToString(),
                 ConvertedBool = m.TypeBool.ToString(),
-              //  ConvertedNullBool = m.TypeBoolN.ToString(),
+                ConvertedNullBool = m.TypeBoolN.ToString(),
                 ConvertedDecimal = m.TypeDecimal.ToString(),
                 ConvertedDouble = m.TypeDouble.ToString(),
                 ConvertedFloat = m.TypeFloat.ToString(),
-                //ConvertedGuid = m.TypeGuid.ToString(),
+                ConvertedGuid = m.TypeGuid.ToString(),
                 Text = m.TypeChar
             }
             ).FirstOrDefaultAsync();

@@ -66,7 +66,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddColumnOperation_with_defaultValue();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` ADD `Name` varchar(30) NOT NULL DEFAULT 'John Doe';" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"NAME\" varchar(30) NOT NULL DEFAULT 'John Doe';" + EOL,
                 Sql);
         }
 
@@ -76,25 +76,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddColumnOperation_with_defaultValueSql();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `Birthday` timestamp DEFAULT CURRENT_TIMESTAMP();" + EOL,
-                Sql);
-        }
-
-        [Fact]
-        public void AddColumnOperation_with_datetime6()
-        {
-            Generate(new AddColumnOperation
-            {
-                Table = "People",
-                Name = "Birthday",
-                ClrType = typeof(DateTime),
-                ColumnType = "timestamp(6)",
-                IsNullable = false,
-                DefaultValue = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-            });
-
-            Assert.Equal(
-                "ALTER TABLE `People` ADD `Birthday` timestamp(6) NOT NULL DEFAULT '" + new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified).ToString("yyyy-MM-dd HH:mm:ss.ffffff") + "';" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" timestamp DEFAULT CURRENT_TIMESTAMP;" + EOL,
                 Sql);
         }
 
@@ -104,7 +86,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 		    base.AddColumnOperation_with_computed_column_SQL();
 
 		    Assert.Equal(
-			    "ALTER TABLE `People` ADD `Birthday` timestamp DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP();" + EOL,
+			    "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;" + EOL,
 			    Sql);
 	    }
 
@@ -114,7 +96,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddDefaultDatetimeOperation_with_valueOnUpdate();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `Birthday` timestamp(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6);" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" timestamp(6) DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;" + EOL,
                 Sql);
         }
 
@@ -124,7 +106,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddDefaultBooleanOperation();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `IsLeader` bit DEFAULT TRUE;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"ISLEADER\" bit DEFAULT TRUE;" + EOL,
                 Sql);
         }
 
@@ -133,7 +115,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddColumnOperation_without_column_type();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `Alias` text NOT NULL;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"ALIAS\" text NOT NULL;" + EOL,
                 Sql);
         }
 
@@ -142,7 +124,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddColumnOperation_with_maxLength();
 
             Assert.Equal(
-                @"ALTER TABLE `Person` ADD `Name` varchar(30);" + EOL,
+                "ALTER TABLE \"PERSON\" ADD \"NAME\" varchar(30);" + EOL,
                 Sql);
         }
 
@@ -151,7 +133,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddForeignKeyOperation_with_name();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` ADD CONSTRAINT `FK_People_Companies` FOREIGN KEY (`EmployerId1`, `EmployerId2`) REFERENCES `hr`.`Companies` (`Id1`, `Id2`) ON DELETE CASCADE;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD CONSTRAINT \"FK_PEOPLE_COMPANIES\" FOREIGN KEY (\"EMPLOYERID1\", \"EMPLOYERID2\") REFERENCES \"HR\".\"COMPANIES\" (\"ID1\", \"ID2\") ON DELETE CASCADE;" + EOL,
                 Sql);
         }
 
@@ -160,7 +142,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddForeignKeyOperation_without_name();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD FOREIGN KEY (`SpouseId`) REFERENCES `People` (`Id`);" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD FOREIGN KEY (\"SPOUSEID\") REFERENCES \"PEOPLE\" (\"ID\");" + EOL,
                 Sql);
         }
 
@@ -169,7 +151,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddPrimaryKeyOperation_with_name();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` ADD CONSTRAINT `PK_People` PRIMARY KEY (`Id1`, `Id2`);" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD CONSTRAINT \"PK_PEOPLE\" PRIMARY KEY (\"ID1\", \"ID2\");" + EOL,
                 Sql);
         }
 
@@ -178,48 +160,47 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddPrimaryKeyOperation_without_name();
 
             var test =
-                "ALTER TABLE `People` ADD PRIMARY KEY (`Id`);" + EOL +
-                @"DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;
-CREATE PROCEDURE POMELO_AFTER_ADD_PRIMARY_KEY(IN `SCHEMA_NAME_ARGUMENT` VARCHAR(255), IN `TABLE_NAME_ARGUMENT` VARCHAR(255), IN `COLUMN_NAME_ARGUMENT` VARCHAR(255))
-BEGIN
-	DECLARE HAS_AUTO_INCREMENT_ID INT(11);
-	DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);
-	DECLARE PRIMARY_KEY_TYPE VARCHAR(255);
-	DECLARE SQL_EXP VARCHAR(1000);
-
-	SELECT COUNT(*) 
-		INTO HAS_AUTO_INCREMENT_ID 
-		FROM `information_schema`.`COLUMNS`
-		WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-			AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-			AND `COLUMN_NAME` = COLUMN_NAME_ARGUMENT
-			AND `COLUMN_TYPE` LIKE '%int%'
-			AND `COLUMN_KEY` = 'PRI';
-	IF HAS_AUTO_INCREMENT_ID THEN
-		SELECT `COLUMN_TYPE`
-			INTO PRIMARY_KEY_TYPE
-			FROM `information_schema`.`COLUMNS`
-			WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-				AND `COLUMN_NAME` = COLUMN_NAME_ARGUMENT
-				AND `COLUMN_TYPE` LIKE '%int%'
-				AND `COLUMN_KEY` = 'PRI';
-		SELECT `COLUMN_NAME`
-			INTO PRIMARY_KEY_COLUMN_NAME
-			FROM `information_schema`.`COLUMNS`
-			WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-				AND `COLUMN_NAME` = COLUMN_NAME_ARGUMENT
-				AND `COLUMN_TYPE` LIKE '%int%'
-				AND `COLUMN_KEY` = 'PRI';
-		SET SQL_EXP = CONCAT('ALTER TABLE `', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '`.`', TABLE_NAME_ARGUMENT, '` MODIFY COLUMN `', PRIMARY_KEY_COLUMN_NAME, '` ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');
-		SET @SQL_EXP = SQL_EXP;
-		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
-		EXECUTE SQL_EXP_EXECUTE;
-		DEALLOCATE PREPARE SQL_EXP_EXECUTE;
-	END IF;
-END;" + EOL +
-                "CALL POMELO_AFTER_ADD_PRIMARY_KEY(NULL, 'People', 'Id');" + EOL +
+                "ALTER TABLE \"PEOPLE\" ADD PRIMARY KEY (\"Id\");" + EOL +
+"DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;" +
+" CREATE PROCEDURE POMELO_AFTER_ADD_PRIMARY_KEY(IN \"SCHEMA_NAME_ARGUMENT\" VARCHAR(255), IN \"TABLE_NAME_ARGUMENT\" VARCHAR(255), IN \"COLUMN_NAME_ARGUMENT\" VARCHAR(255))" +
+" BEGIN" +
+" DECLARE HAS_AUTO_INCREMENT_ID INT(11);" +
+" DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);" +
+" DECLARE PRIMARY_KEY_TYPE VARCHAR(255);" +
+" DECLARE SQL_EXP VARCHAR(1000);" +
+" SELECT COUNT(*)" +
+" INTO HAS_AUTO_INCREMENT_ID" +
+" FROM \"information_schema\".\"COLUMNS\"" +
+" WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))" +
+" AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT" +
+" AND \"COLUMN_NAME\" = COLUMN_NAME_ARGUMENT" +
+" AND \"COLUMN_TYPE\" LIKE '%int%'" +
+" AND \"COLUMN_KEY\" = 'PRI';" +
+" IF HAS_AUTO_INCREMENT_ID THEN" +
+" SELECT \"COLUMN_TYPE\"" +
+" INTO PRIMARY_KEY_TYPE" +
+" FROM \"information_schema\".\"COLUMNS\"" +
+" WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))" +
+" AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT" +
+" AND \"COLUMN_NAME\" = COLUMN_NAME_ARGUMENT" +
+" AND \"COLUMN_TYPE\" LIKE '%int%'" +
+" AND \"COLUMN_KEY\" = 'PRI';" +
+" SELECT \"COLUMN_NAME\"" +
+" INTO PRIMARY_KEY_COLUMN_NAME" +
+" FROM \"information_schema\".\"COLUMNS\"" +
+" WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))" +
+" AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT" +
+" AND \"COLUMN_NAME\" = COLUMN_NAME_ARGUMENT" +
+" AND \"COLUMN_TYPE\" LIKE '%int%'" +
+" AND \"COLUMN_KEY\" = 'PRI';" +
+" SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" MODIFY COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');" +
+" SET @SQL_EXP = SQL_EXP;" +
+" PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;" +
+" EXECUTE SQL_EXP_EXECUTE;" +
+" DEALLOCATE PREPARE SQL_EXP_EXECUTE;" +
+" END IF;" +
+" END;" + EOL +
+                "CALL POMELO_AFTER_ADD_PRIMARY_KEY(NULL, 'PEOPLE', 'ID');" + EOL +
                 "DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;" + EOL;
             
             Assert.Equal(test,
@@ -231,7 +212,7 @@ END;" + EOL +
             base.AddUniqueConstraintOperation_with_name();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` ADD CONSTRAINT `AK_People_DriverLicense` UNIQUE (`DriverLicense_State`, `DriverLicense_Number`);" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD CONSTRAINT \"AK_PEOPLE_DRIVERLICENSE\" UNIQUE (\"DRIVERLICENSE_STATE\", \"DRIVERLICENSE_NUMBER\");" + EOL,
                 Sql);
         }
 
@@ -240,7 +221,7 @@ END;" + EOL +
             base.AddUniqueConstraintOperation_without_name();
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD UNIQUE (`SSN`);" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD UNIQUE (\"SSN\");" + EOL,
                 Sql);
         }
 
@@ -249,7 +230,7 @@ END;" + EOL +
             base.CreateIndexOperation_unique();
 
             Assert.Equal(
-                "CREATE UNIQUE INDEX `IX_People_Name` ON `dbo`.`People` (`FirstName`, `LastName`);" + EOL,
+                "CREATE UNIQUE INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
                 Sql);
         }
 
@@ -258,7 +239,7 @@ END;" + EOL +
             base.CreateIndexOperation_fulltext();
 
             Assert.Equal(
-                "CREATE FULLTEXT INDEX `IX_People_Name` ON `dbo`.`People` (`FirstName`, `LastName`);" + EOL,
+                "CREATE FULLTEXT INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
                 Sql);
         }
 
@@ -267,7 +248,7 @@ END;" + EOL +
             base.CreateIndexOperation_spatial();
 
             Assert.Equal(
-                "CREATE SPATIAL INDEX `IX_People_Name` ON `dbo`.`People` (`FirstName`, `LastName`);" + EOL,
+                "CREATE SPATIAL INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
                 Sql);
         }
 
@@ -276,7 +257,7 @@ END;" + EOL +
             base.CreateIndexOperation_nonunique();
 
             Assert.Equal(
-                "CREATE INDEX `IX_People_Name` ON `People` (`Name`);" + EOL,
+                "CREATE INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"NAME\");" + EOL,
                 Sql);
         }
 
@@ -284,7 +265,7 @@ END;" + EOL +
         {
             base.RenameIndexOperation_works();
             
-            Assert.Equal("ALTER TABLE `People` RENAME INDEX `IX_People_Discriminator` TO `IX_People_DiscriminatorNew`;" + EOL,
+            Assert.Equal("ALTER TABLE \"PEOPLE\" RENAME INDEX \"IX_PEOPLE_DISCRIMINATOR\" TO \"IX_PEOPLE_DISCRIMINATORNEW\";" + EOL,
                 Sql);
         }
 
@@ -293,8 +274,7 @@ END;" + EOL +
             Generate(new FirebirdCreateDatabaseOperation { Name = "Northwind" });
 
             Assert.Equal(
-                @"CREATE SCHEMA  `Northwind`;" + EOL,
-                Sql);
+                "CREATE SCHEMA  \"NORTHWIND\";" + EOL, Sql);
         }
 
         public override void CreateTableOperation()
@@ -302,13 +282,13 @@ END;" + EOL +
             base.CreateTableOperation();
 
             Assert.Equal(
-                "CREATE TABLE `People` (" + EOL +
-                "    `Id` integer NOT NULL," + EOL +
-                "    `EmployerId` integer," + EOL +
-                "    `SSN` varchar(11)," + EOL +
-                "    PRIMARY KEY (`Id`)," + EOL +
-                "    UNIQUE (`SSN`)," + EOL +
-                "    FOREIGN KEY (`EmployerId`) REFERENCES `Companies` (`Id`)" + EOL +
+                "CREATE TABLE \"PEOPLE\" (" + EOL +
+                "    \"ID\" integer NOT NULL," + EOL +
+                "    \"EMPLOYERID\" integer," + EOL +
+                "    \"SSN\" varchar(11)," + EOL +
+                "    PRIMARY KEY (\"ID\")," + EOL +
+                "    UNIQUE (\"SSN\")," + EOL +
+                "    FOREIGN KEY (\"EMPLOYERID\") REFERENCES \"COMPANIES\" (\"ID\")" + EOL +
                 ");" + EOL,
                 Sql);
         }
@@ -318,9 +298,9 @@ END;" + EOL +
             base.CreateTableUlongAi();
 
             Assert.Equal(
-                "CREATE TABLE `dbo`.`TestUlongAutoIncrement` (" + EOL +
-                "    `Id` bigint unsigned NOT NULL AUTO_INCREMENT," + EOL +
-                "    PRIMARY KEY (`Id`)" + EOL +
+                "CREATE TABLE \"TESTULONGAUTOINCREMENT\" (" + EOL +
+                "    \"ID\" bigint NOT NULL AUTO_INCREMENT," + EOL +
+                "    PRIMARY KEY (\"ID\")" + EOL +
                 ");" + EOL,
                 Sql);
         }
@@ -330,7 +310,7 @@ END;" + EOL +
             base.DropColumnOperation();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` DROP COLUMN `LuckyNumber`;",
+                "ALTER TABLE \"PEOPLE\" DROP COLUMN \"LUCKYNUMBER\";",
                 Sql);
         }
 
@@ -339,7 +319,7 @@ END;" + EOL +
             base.DropForeignKeyOperation();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` DROP FOREIGN KEY `FK_People_Companies`;" + EOL,
+                "ALTER TABLE \"PEOPLE\" DROP FOREIGN KEY \"FK_PEOPLE_COMPANIES\";" + EOL,
                 Sql);
         }
 
@@ -348,47 +328,46 @@ END;" + EOL +
             base.DropPrimaryKeyOperation();
 
             Assert.Equal(
-                @"DROP PROCEDURE IF EXISTS POMELO_BEFORE_DROP_PRIMARY_KEY;
-CREATE PROCEDURE POMELO_BEFORE_DROP_PRIMARY_KEY(IN `SCHEMA_NAME_ARGUMENT` VARCHAR(255), IN `TABLE_NAME_ARGUMENT` VARCHAR(255))
-BEGIN
-	DECLARE HAS_AUTO_INCREMENT_ID TINYINT(1);
-	DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);
-	DECLARE PRIMARY_KEY_TYPE VARCHAR(255);
-	DECLARE SQL_EXP VARCHAR(1000);
-
-	SELECT COUNT(*) 
-		INTO HAS_AUTO_INCREMENT_ID 
-		FROM `information_schema`.`COLUMNS`
-		WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-			AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-			AND `Extra` = 'auto_increment'
-			AND `COLUMN_KEY` = 'PRI'
-			LIMIT 1;
-	IF HAS_AUTO_INCREMENT_ID THEN
-		SELECT `COLUMN_TYPE`
-			INTO PRIMARY_KEY_TYPE
-			FROM `information_schema`.`COLUMNS`
-			WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-				AND `COLUMN_KEY` = 'PRI'
-			LIMIT 1;
-		SELECT `COLUMN_NAME`
-			INTO PRIMARY_KEY_COLUMN_NAME
-			FROM `information_schema`.`COLUMNS`
-			WHERE `TABLE_SCHEMA` = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND `TABLE_NAME` = TABLE_NAME_ARGUMENT
-				AND `COLUMN_KEY` = 'PRI'
-			LIMIT 1;
-		SET SQL_EXP = CONCAT('ALTER TABLE `', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '`.`', TABLE_NAME_ARGUMENT, '` MODIFY COLUMN `', PRIMARY_KEY_COLUMN_NAME, '` ', PRIMARY_KEY_TYPE, ' NOT NULL;');
-		SET @SQL_EXP = SQL_EXP;
-		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
-		EXECUTE SQL_EXP_EXECUTE;
-		DEALLOCATE PREPARE SQL_EXP_EXECUTE;
-	END IF;
-END;" + EOL +
+"DROP PROCEDURE IF EXISTS POMELO_BEFORE_DROP_PRIMARY_KEY;"
++ " CREATE PROCEDURE POMELO_BEFORE_DROP_PRIMARY_KEY(IN \"SCHEMA_NAME_ARGUMENT\" VARCHAR(255), IN \"TABLE_NAME_ARGUMENT\" VARCHAR(255))" 
++ " BEGIN" 
++ " DECLARE HAS_AUTO_INCREMENT_ID TINYINT(1);" 
++ " DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);" 
++ "	DECLARE PRIMARY_KEY_TYPE VARCHAR(255);" 
++ " DECLARE SQL_EXP VARCHAR(1000);"
++ " SELECT COUNT(*) "
++ " INTO HAS_AUTO_INCREMENT_ID "
++ "	FROM \"information_schema\".\"COLUMNS\""
++ " WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))"
++ " AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT"
++ " AND \"Extra\" = 'auto_increment'"
++ " AND \"COLUMN_KEY\" = 'PRI'"
++ "	LIMIT 1;"
++ " IF HAS_AUTO_INCREMENT_ID THEN"
++ "	SELECT \"COLUMN_TYPE\""
++ " INTO PRIMARY_KEY_TYPE"
++ " FROM \"information_schema\".\"COLUMNS\""
++ " WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))"
++ " AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT"
++ " AND \"COLUMN_KEY\" = 'PRI'"
++ " LIMIT 1;"
++ " SELECT \"COLUMN_NAME\""
++ "	INTO PRIMARY_KEY_COLUMN_NAME"
++ "	FROM \"information_schema\".\"COLUMNS\""
++ " WHERE \"TABLE_SCHEMA\" = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))"
++ " AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT"
++ " AND \"COLUMN_KEY\" = 'PRI'"
++ " LIMIT 1;"
++ " SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" MODIFY COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL;');"
++ " SET @SQL_EXP = SQL_EXP;"
++ " PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;"
++ " EXECUTE SQL_EXP_EXECUTE;"
++ " DEALLOCATE PREPARE SQL_EXP_EXECUTE;"
++ " END IF;"
++" END;" + EOL +
                 "CALL POMELO_BEFORE_DROP_PRIMARY_KEY('dbo', 'People');" + EOL +
                 "DROP PROCEDURE IF EXISTS POMELO_BEFORE_DROP_PRIMARY_KEY;" + EOL +
-                "ALTER TABLE `dbo`.`People` DROP PRIMARY KEY;" + EOL,
+                "ALTER TABLE \"PEOPLE\" DROP PRIMARY KEY;" + EOL,
                 Sql);
         }
 
@@ -397,7 +376,7 @@ END;" + EOL +
             base.DropTableOperation();
 
             Assert.Equal(
-                "DROP TABLE `dbo`.`People`;" + EOL,
+                "DROP TABLE \"PEOPLE\";" + EOL,
                 Sql);
         }
 
@@ -406,7 +385,7 @@ END;" + EOL +
             base.DropUniqueConstraintOperation();
 
             Assert.Equal(
-                "ALTER TABLE `dbo`.`People` DROP CONSTRAINT `AK_People_SSN`;" + EOL,
+                "ALTER TABLE \"PEOPLE\" DROP CONSTRAINT \"AK_PEOPLE_SSN\";" + EOL,
                 Sql);
         }
 
@@ -425,8 +404,8 @@ END;" + EOL +
         {
             base.AlterColumnOperation();
             Assert.Equal(
-                @"ALTER TABLE `dbo`.`People` MODIFY COLUMN `LuckyNumber` int NOT NULL;" + EOL +
-                @"ALTER TABLE `dbo`.`People` ALTER COLUMN `LuckyNumber` SET DEFAULT 7" + EOL,
+                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYMEMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYMEMBER\" SET DEFAULT 7" + EOL,
             Sql, false, true, true);
         }
 
@@ -434,8 +413,8 @@ END;" + EOL +
         {
             base.AlterColumnOperation_without_column_type();
             Assert.Equal(
-                @"ALTER TABLE `People` MODIFY COLUMN `LuckyNumber` int NOT NULL;" + EOL +
-                @"ALTER TABLE `People` ALTER COLUMN `LuckyNumber` DROP DEFAULT;",
+                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYMEMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYMEMBER\" DROP DEFAULT;",
             Sql);
         }
 
@@ -454,8 +433,8 @@ END;" + EOL +
                 });
 
             Assert.Equal(
-                @"ALTER TABLE `People` MODIFY COLUMN `GuidKey` char(38) NOT NULL;" + EOL +
-                @"ALTER TABLE `People` ALTER COLUMN `GuidKey` DROP DEFAULT;",
+                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"GUIDKEY\" char(38) NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"GUIDKEY\" DROP DEFAULT;",
             Sql, false , true, true);
         }
 
@@ -493,7 +472,7 @@ END;" + EOL +
                 });
 
             Assert.Equal(
-                $"ALTER TABLE `People` MODIFY COLUMN `Blob` {type} NULL;" + EOL,
+                $"ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"BLOB\" {type} NULL;" + EOL,
                 Sql);
         }
 
@@ -514,7 +493,7 @@ END;" + EOL +
             });
 
             Assert.Equal(
-                "CREATE INDEX `IX_People_Name` ON `dbo`.`People` USING gin (`FirstName`);" + EOL,
+                "CREATE INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" USING gin (\"FIRSTNAME\");" + EOL,
                 Sql);
         }
 
@@ -527,7 +506,7 @@ END;" + EOL +
             });
 
             Assert.Equal(
-                @"CREATE DATABASE hstore" + EOL,
+                "CREATE DATABASE \"HSTORE\"" + EOL,
                 Sql);
         }
 
@@ -545,7 +524,7 @@ END;" + EOL +
             });
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `foo` int NOT NULL AUTO_INCREMENT;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" int NOT NULL AUTO_INCREMENT;" + EOL,
                 Sql);
         }
 
@@ -564,7 +543,7 @@ END;" + EOL +
                 });
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `foo` int NOT NULL DEFAULT 8;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" int NOT NULL DEFAULT 8;" + EOL,
                 Sql);
         }
 
@@ -582,7 +561,7 @@ END;" + EOL +
                 });
 
             Assert.Equal(
-                "ALTER TABLE `People` ADD `foo` varchar(38) NOT NULL;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" varchar(38) NOT NULL;" + EOL,
                 Sql);
         }
 
