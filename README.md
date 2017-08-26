@@ -7,7 +7,7 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 
 ## Status
 
-Work in progress at an early stage**, **not** production ready, **not** beta ready.
+Work in progress at an early stage**, **not** production ready, but now beta ready.
  
   - BLOB & CLOB only partially supported.
 
@@ -29,7 +29,12 @@ Version | Content | Status
 
 ## Dependencies 
 
-The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/packages/SouchProd.Data.FirebirdClient/) is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly t support .Net standard 2.
+The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/packages/SouchProd.Data.FirebirdClient/) is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly to support .Net standard 2.
+
+## Compatibility
+
+This assembly can be conssumed in a project targeting .NETSTANDARD 2.0 or the .NET Core 2.0 Framework.
+The framework 1.0 and 1.1, as well as .NETSTANDARD 1.6 and older are **not** supported.
 
 ## Contributing 
 
@@ -45,7 +50,9 @@ Wanna add a feature, fix a bug or improve my crappy code ?
 
 This project inherit from the [Microsoft Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) (under Apache licence).
 
-This project benefit also from the great work made on the [Pomelos MySql EF Core provider](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql), a large part of this repository code was forked from this it.
+It benefit also from the great work made on the [Pomelos MySql EF Core provider](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql), a large part of this repository code was forked from this it.
+
+This project couldn´t exist without the [.NET Firebird Client](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient) made and supported by Jiri Cincura.
 
 ## License
 
