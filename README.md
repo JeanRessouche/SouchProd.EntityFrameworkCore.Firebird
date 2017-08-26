@@ -7,7 +7,7 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 
 ## Status
 
-Work in progress at an early stage**, **not** production ready, but now beta ready.
+Work in progress at an early stage, **not** production ready, but now beta ready.
  
   - BLOB & CLOB only partially supported.
 
