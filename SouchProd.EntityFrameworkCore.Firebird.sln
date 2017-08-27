@@ -30,6 +30,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SouchProd.EFCore.Firebird.AspNetSample", "samples\AspNetCore\SouchProd.EFCore.Firebird.AspNetSample\SouchProd.EFCore.Firebird.AspNetSample.csproj", "{FA10D760-2E34-4B6F-99D0-EA053C60A2C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{9CB9D76B-0C6D-4F73-B0F6-DA66ACF7CB55}"
+	ProjectSection(SolutionItems) = preProject
+		samples\AspNetCore\README.md = samples\AspNetCore\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore", "AspNetCore", "{9C605B60-F102-42D4-B0F3-F1EDE2C37225}"
 EndProject
