@@ -295,7 +295,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .AppendLine($"BEGIN")
                 .AppendLine($"    IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{ operation.Name }')")
                 .AppendLine($"    THEN")
-                .AppendLine($"        CREATE SCHEMA { operation.Name };")
+                .AppendLine($"        CREATE DATABASE { operation.Name };")
                 .AppendLine($"    END IF;")
                 .AppendLine($"END;")
                 .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
@@ -307,7 +307,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(builder, nameof(builder));
 
             builder
-                .Append("CREATE SCHEMA ")
+                .Append("CREATE DATABASE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
         }
@@ -414,7 +414,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                     case "tinyint":
                     case "smallint":
                     case "mediumint":
-                    case "int":
+                    case "integer":
                     case "bigint":
                         autoIncrement = true;
                         break;

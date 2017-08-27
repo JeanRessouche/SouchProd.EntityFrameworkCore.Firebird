@@ -22,7 +22,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
         public ExpressionTest()
         {
             _db = new AppDb();
-/*
+
             // initialize simple data types
             _simple = new DataTypesSimple
             {
@@ -45,16 +45,16 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
             _variable.TypeString = "EntityFramework";
 
             _db.DataTypesVariable.Add(_variable);
-            _db.SaveChanges();*/
+            _db.SaveChanges();
         }
 
         public void Dispose()
         {
             try
             {
-              /*  _db.DataTypesSimple.Remove(_simple);
+                _db.DataTypesSimple.Remove(_simple);
                 _db.DataTypesVariable.Remove(_variable);
-                _db.SaveChanges();*/
+                _db.SaveChanges();
             }
             finally
             {
@@ -167,8 +167,9 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Models
             var result = await _db.DataTypesSimple.Select(m =>
                 new {
                     Id = m.Id,
+                    ValDbl = m.TypeDoubleN, 
                     Abs = Math.Abs(m.TypeDoubleN.Value),
-                }).FirstOrDefaultAsync(m => m.Id == _simple.Id);
+                }).FirstOrDefaultAsync(m => (m.Id == _simple.Id) && (m.ValDbl != null));
 
             Assert.Equal(Math.Abs(_simple.TypeDoubleN.Value), result.Abs);
         }

@@ -96,7 +96,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddDefaultDatetimeOperation_with_valueOnUpdate();
 
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" timestamp(6) DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"BIRTHDAY\" timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;" + EOL,
                 Sql);
         }
 
@@ -160,7 +160,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.AddPrimaryKeyOperation_without_name();
 
             var test =
-                "ALTER TABLE \"PEOPLE\" ADD PRIMARY KEY (\"Id\");" + EOL +
+                "ALTER TABLE \"PEOPLE\" ADD PRIMARY KEY (\"ID\");" + EOL +
 "DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;" +
 " CREATE PROCEDURE POMELO_AFTER_ADD_PRIMARY_KEY(IN \"SCHEMA_NAME_ARGUMENT\" VARCHAR(255), IN \"TABLE_NAME_ARGUMENT\" VARCHAR(255), IN \"COLUMN_NAME_ARGUMENT\" VARCHAR(255))" +
 " BEGIN" +
@@ -404,8 +404,8 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         {
             base.AlterColumnOperation();
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYMEMBER\" integer NOT NULL;" + EOL +
-                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYMEMBER\" SET DEFAULT 7" + EOL,
+                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" SET DEFAULT 7" + EOL,
             Sql, false, true, true);
         }
 
@@ -413,8 +413,8 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         {
             base.AlterColumnOperation_without_column_type();
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYMEMBER\" integer NOT NULL;" + EOL +
-                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYMEMBER\" DROP DEFAULT;",
+                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" DROP DEFAULT;",
             Sql);
         }
 
@@ -518,13 +518,13 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 Table = "People",
                 Name = "foo",
                 ClrType = typeof(int),
-                ColumnType = "int",
+                ColumnType = "integer",
                 IsNullable = false,
                 [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
             });
 
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" int NOT NULL AUTO_INCREMENT;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" integer NOT NULL AUTO_INCREMENT;" + EOL,
                 Sql);
         }
 
@@ -537,13 +537,13 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Table = "People",
                     Name = "foo",
                     ClrType = typeof(int),
-                    ColumnType = "int",
+                    ColumnType = "integer",
                     IsNullable = false,
                     DefaultValue = 8
                 });
 
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" int NOT NULL DEFAULT 8;" + EOL,
+                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" integer NOT NULL DEFAULT 8;" + EOL,
                 Sql);
         }
 

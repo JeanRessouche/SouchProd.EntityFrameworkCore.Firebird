@@ -96,19 +96,19 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Models
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public DateTime UpdatedTimetamp { get; set; }
 
-		[Column(TypeName = "TIMESTAMP(3)")]
+		[Column(TypeName = "TIMESTAMP")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public DateTime CreatedTimestamp3 { get; set; }
 
-		[Column(TypeName = "TIMESTAMP(3)")]
+		[Column(TypeName = "TIMESTAMP")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public DateTime UpdatedTimetamp3 { get; set; }
 
-		[Column(TypeName = "TIMESTAMP(6)")]
+		[Column(TypeName = "TIMESTAMP")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public DateTime CreatedTimestamp6 { get; set; }
 
-		[Column(TypeName = "TIMESTAMP(6)")]
+		[Column(TypeName = "TIMESTAMP")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public DateTime UpdatedTimetamp6 { get; set; }
 	}

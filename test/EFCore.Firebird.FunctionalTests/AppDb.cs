@@ -74,8 +74,10 @@ namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests
 		{
 		    if (_configured)
 		        return;
-            
-		    if (_connection != null)
+
+            optionsBuilder.EnableSensitiveDataLogging();
+
+            if (_connection != null)
                 optionsBuilder.UseFirebird(_connection, options => options.MaxBatchSize(AppConfig.EfBatchSize));
 		    else
 				optionsBuilder.UseFirebird(AppConfig.Config["Data:ConnectionString"], options => options.MaxBatchSize(AppConfig.EfBatchSize));

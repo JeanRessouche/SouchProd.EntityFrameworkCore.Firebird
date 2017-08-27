@@ -72,7 +72,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Table = "People",
                     Name = "Birthday",
                     ClrType = typeof(DateTime),
-                    ColumnType = "timestamp(6)",
+                    ColumnType = "timestamp",
                     IsNullable = true,
                     [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.ComputedColumn
                 });
@@ -195,7 +195,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Schema = "", // "dbo",
                     Name = "LuckyNumber",
                     ClrType = typeof(int),
-                    ColumnType = "int",
+                    ColumnType = "integer",
                     IsNullable = false,
                     DefaultValue = 7
                 });
@@ -210,7 +210,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Table = "People",
                     Name = "LuckyNumber",
                     ClrType = typeof(int),
-                    ColumnType = "int",
+                    ColumnType = "integer",
                 });
         }
 
@@ -325,7 +325,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                             Name = "Id",
                             Table = "People",
                             ClrType = typeof(int),
-                            ColumnType = "int",
+                            ColumnType = "integer",
                             IsNullable = false
                         },
                         new AddColumnOperation
@@ -333,7 +333,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                             Name = "EmployerId",
                             Table = "People",
                             ClrType = typeof(int),
-                            ColumnType = "int",
+                            ColumnType = "integer",
                             IsNullable = true
                         },
                         new AddColumnOperation
