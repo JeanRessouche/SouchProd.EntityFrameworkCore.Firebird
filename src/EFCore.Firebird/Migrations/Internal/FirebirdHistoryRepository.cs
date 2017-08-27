@@ -37,16 +37,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
             get
             {
                 var builder = new StringBuilder();
-
-                builder.Append("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE ");
-                
-                builder
-                    .Append("TABLE_SCHEMA='")
-                    .Append(SqlGenerationHelper.EscapeLiteral(TableSchema ?? Dependencies.Connection.DbConnection.Database))
-                    .Append("' AND TABLE_NAME='")
-                    .Append(SqlGenerationHelper.EscapeLiteral(TableName))
-                    .Append("';");
-
+                builder.Append($"SELECT 1 FROM RDB$DATABASE WHERE (");
+                builder.Append($"SELECT COUNT(*) FROM rdb$relations where upper(rdb$relation_name) = upper('{SqlGenerationHelper.EscapeLiteral(TableName)}')");
+                builder.Append($")>0");
                 return builder.ToString();
             }
         }

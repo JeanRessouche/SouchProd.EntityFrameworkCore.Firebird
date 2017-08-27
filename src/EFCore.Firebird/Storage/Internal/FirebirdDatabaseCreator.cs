@@ -101,7 +101,8 @@ where
                     {
                         try
                         {
-                            _connection.DbConnection.Open();
+                            if (_connection.DbConnection.State != System.Data.ConnectionState.Open)
+                                _connection.DbConnection.Open();
                             _connection.DbConnection.Close();
                             return true;
                         }
@@ -128,7 +129,9 @@ where
                     {
                         try
                         {
-                            await _connection.DbConnection.OpenAsync(ct).ConfigureAwait(false);
+                            if (_connection.DbConnection.State != System.Data.ConnectionState.Open)
+                                await _connection.DbConnection.OpenAsync(ct).ConfigureAwait(false);
+
                             _connection.DbConnection.Close();
                             return true;
                         }

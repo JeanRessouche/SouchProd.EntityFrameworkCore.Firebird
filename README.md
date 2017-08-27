@@ -1,4 +1,3 @@
-
 [![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget] [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
 
 # SouchProd.EntityFrameworkCore.Firebird
@@ -11,6 +10,8 @@ Work in progress at an early stage, **not** production ready, but now beta ready
  
   - BLOB & CLOB only partially supported.
 
+  - Table Inludes not yet supported.
+
   - Scaffolding not yet supported.
 
   - Migrations not yet supported.
@@ -22,9 +23,9 @@ Version | Content | Status
 **2.0 Preview 1** | **First release, read/write support limited to basic field types** | **:heavy_check_mark: Available**
 **2.0 Preview 2** | **Last inserted id support** | **:heavy_check_mark: Available**
 **2.0 Preview 3** | **Cast, Substring, Replace, Math & other Linq/Db functions support** | **:heavy_check_mark: Available**
-2.0 Preview 4 | Read/Write support for the BLOB & CLOB fields | :fire: In progress
-2.0 Preview 5 | Scaffolding support | :date: Scheduled
-2.0 Preview 6 | Migration support | :date: Scheduled
+**2.0 Preview 4** | **Migration support** | **:heavy_check_mark: Available**
+2.0 Preview 5 | Read/Write support for the BLOB & CLOB fields | :fire: In progress
+2.0 Preview 6 | Scaffolding support | :date: Scheduled
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## Dependencies 
@@ -35,6 +36,10 @@ The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/pack
 
 This assembly can be conssumed in a project targeting .NETSTANDARD 2.0 or the .NET Core 2.0 Framework.
 The framework 1.0 and 1.1, as well as .NETSTANDARD 1.6 and older are **not** supported.
+
+## How-to
+
+Please refer to the Asp.Net Core sample application for guidance.
 
 ## Contributing 
 

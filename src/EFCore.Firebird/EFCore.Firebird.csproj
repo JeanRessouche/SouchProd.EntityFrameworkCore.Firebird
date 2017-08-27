@@ -14,11 +14,12 @@
     <RepositoryUrl>git://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</RepositoryUrl>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <Version>2.0.2</Version>
+    <Version>2.0.4</Version>
     <Copyright>SouchProd 2017</Copyright>
     <Company>SouchProd</Company>
     <Authors>Jean Ressouche</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>Migrations are now working.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Query\Expressions\Internal\RegexpExpression.cs" />
