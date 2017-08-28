@@ -32,9 +32,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    private readonly LongTypeMapping _bigint            = new LongTypeMapping("bigint", DbType.Int64);
 	    private readonly ULongTypeMapping _ubigint          = new ULongTypeMapping("bigint", DbType.UInt64);
 
-	    // decimals
-	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal(18,4)", DbType.Decimal);
-	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
+        // decimals
+        private readonly DecimalTypeMapping _decimal = new DecimalTypeMapping("decimal(18,4)", DbType.Decimal);
+        
+        private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
         private readonly FloatTypeMapping _float            = new FloatTypeMapping("float");
 
 	    // binary
@@ -88,9 +89,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     //{ "bigint unsigned", _ubigint },
 
                     // decimals
-                    { "decimal(18,4)", _decimal },
+                    { "DECIMAL", _decimal },
                     { "DOUBLE PRECISION", _double },
-                    { "float", _float },
+                    { "FLOAT", _float },
 
                     // TODO
                     // binary
@@ -138,8 +139,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	                { typeof(ulong), _ubigint },
 
 	                // decimals
-	                { typeof(decimal), _decimal },
-	                { typeof(float), _float },
+                    { typeof(decimal), _decimal },
+                    { typeof(float), _float },
 	                { typeof(double), _double },
 
 	                // byte / char

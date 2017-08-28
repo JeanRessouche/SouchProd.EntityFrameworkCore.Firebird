@@ -11,8 +11,6 @@ Work in progress at an early stage, **not** production ready, but now beta ready
   - Migrations partially supported.
 
   - Table Inludes not yet supported.
-
-  - Scaffolding not yet supported.  
   
 ## Roadmap
 
@@ -23,7 +21,7 @@ Version | Content | Status
 **2.0 Preview 3** | **Cast, Substring, Replace, Math & other Linq/Db functions support** | **:heavy_check_mark: Available**
 **2.0 Preview 4** | **Migration support** | **:heavy_check_mark: Available**
 **2.0 Preview 5** | **Read/Write support for the BLOB & CLOB fields** | **:heavy_check_mark: Available**
-2.0 Preview 6 | Scaffolding support | :date: Scheduled
+**2.0 Preview 6** | **:exclamation: Scaffolding support** | **:heavy_check_mark: Available**
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## Dependencies 

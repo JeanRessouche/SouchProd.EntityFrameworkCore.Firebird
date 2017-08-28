@@ -10,5 +10,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Design;
 
 [assembly: AssemblyTitle("SouchProd.EntityFrameworkCore.Firebird")]
-[assembly: AssemblyDescription("Firebird provider for Entity Framework Core 2.0")]
+[assembly: AssemblyDescription("Entity Framework Core provider built on top of the Firebird ADO.NET Data Provider. It enables use the Entity Framework Core 2.0 ORM with Firebird (2.x, 3.0) and Interbase.")]
+[assembly: DesignTimeProviderServices("Microsoft.EntityFrameworkCore.Design.Internal.FirebirdDesignTimeServices")]
 [assembly: InternalsVisibleTo("SouchProd.EntityFrameworkCore.Firebird.Tests")]

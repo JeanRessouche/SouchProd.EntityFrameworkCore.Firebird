@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.Extensions.Logging;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 
 namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
 {
@@ -34,6 +35,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
 
         void ResetState()
         {
+            Logger.LogDebug("ResetState");
             _connection = null;
             _tableSelectionSet = null;
             _databaseModel = new DatabaseModel();
@@ -73,10 +75,18 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
                 _databaseModel.DatabaseName = _connection.Database;
                 _databaseModel.DefaultSchema = null;
 
+                Logger.LogDebug("GetTables");
                 GetTables();
+                Logger.LogDebug("GetColumns");
                 GetColumns();
+                Logger.LogDebug("GetPrimaryKeys");
+                GetPrimaryKeys();
+                Logger.LogDebug("GetIndexes");
                 GetIndexes();
+                Logger.LogDebug("GetConstraints");
                 GetConstraints();
+                Logger.LogDebug("GetConstraints completed");
+
                 return _databaseModel;
             }
             finally
@@ -88,7 +98,15 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetTablesQuery = @"select rdb$relation_name from rdb$relations where rdb$view_blr is null and (rdb$system_flag is null or rdb$system_flag = 0)";
+        const string GetTablesQuery = @"
+select 
+    rdb$relation_name 
+from 
+    rdb$relations 
+where 
+    rdb$view_blr is null 
+    and (rdb$system_flag is null or rdb$system_flag = 0) 
+    and rdb$relation_name not like 'IBE$%'";
 
         void GetTables()
         {
@@ -100,8 +118,10 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
                     var table = new DatabaseTable
                     {
                         Schema = null,
-                        Name = reader.GetString(0)
+                        Name = reader.GetString(0).Trim()
                     };
+
+                    Logger.LogDebug($"GetTables => Add { reader.GetString(0).Trim() }.");
 
                     if (_tableSelectionSet.Allows(table.Schema, table.Name))
                     {
@@ -112,86 +132,91 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
             }
         }
 
-        const string GetColumnsQuery = @"SELECT
-  RF.RDB$FIELD_NAME as Field,
-  CASE F.RDB$FIELD_TYPE
+        // DECIMAL(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')
+
+        readonly string _getColumnsQuery = $@"
+SELECT
+    RF.RDB$FIELD_NAME as Field,
+    CASE Coalesce(F.RDB$FIELD_TYPE, 0)
     WHEN 7 THEN
-      CASE F.RDB$FIELD_SUB_TYPE
+        CASE F.RDB$FIELD_SUB_TYPE
         WHEN 0 THEN 'SMALLINT'
-        WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
-        WHEN 2 THEN 'DECIMAL'
-      END
+        ELSE 'DECIMAL'
+        END
     WHEN 8 THEN
-      CASE F.RDB$FIELD_SUB_TYPE
+        CASE F.RDB$FIELD_SUB_TYPE
         WHEN 0 THEN 'INTEGER'
-        WHEN 1 THEN 'NUMERIC('  || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
-        WHEN 2 THEN 'DECIMAL'
-      END
+        ELSE 'DECIMAL'
+        END
     WHEN 9 THEN 'QUAD'
     WHEN 10 THEN 'FLOAT'
     WHEN 12 THEN 'DATE'
     WHEN 13 THEN 'TIME'
     WHEN 14 THEN 'CHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ') '
     WHEN 16 THEN
-      CASE F.RDB$FIELD_SUB_TYPE
+        CASE F.RDB$FIELD_SUB_TYPE
         WHEN 0 THEN 'BIGINT'
-        WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
-        WHEN 2 THEN 'DECIMAL'
-      END
-    WHEN 27 THEN 'DOUBLE'
+        ELSE 'DECIMAL'
+        END
+    WHEN 27 THEN 'DOUBLE PRECISION'
     WHEN 35 THEN 'TIMESTAMP'
     WHEN 37 THEN 'VARCHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ')'
     WHEN 40 THEN 'CSTRING' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ')'
     WHEN 45 THEN 'BLOB_ID'
     WHEN 261 THEN 'BLOB SUB_TYPE ' || F.RDB$FIELD_SUB_TYPE
     ELSE 'RDB$FIELD_TYPE: ' || F.RDB$FIELD_TYPE || '?'
-  END as Type,
-  IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, 'YES', 'NO') as " + "\"" + @"Null"+ "\"" + @",
-        COALESCE(RF.RDB$DEFAULT_SOURCE, F.RDB$DEFAULT_SOURCE) as " + "\"" + @"Default" + "\"" + @"
-        FROM
-            RDB$RELATION_FIELDS RF
-        JOIN
-            RDB$FIELDS F ON(F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE)
-        LEFT OUTER JOIN
-            RDB$CHARACTER_SETS CH ON(CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
-        WHERE
-            (RF.RDB$RELATION_NAME = {0}) AND(COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0)
-        ORDER BY
-        RF.RDB$FIELD_POSITION;";
+    END as Type,
+    IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, 'YES', 'NO') as sNull,
+    COALESCE(RF.RDB$DEFAULT_SOURCE, F.RDB$DEFAULT_SOURCE) as AsDefault,
+    RF.rdb$description
+FROM
+    RDB$RELATION_FIELDS RF
+JOIN
+    RDB$FIELDS F ON(F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE)
+LEFT OUTER JOIN
+    RDB$CHARACTER_SETS CH ON(CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
+WHERE
+    (RF.RDB$RELATION_NAME = '" +"{0}"+@"') AND(COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0)
+ORDER BY
+RF.RDB$FIELD_POSITION;";
 
         void GetColumns()
         {
             foreach (var x in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetColumnsQuery, x.Key), _connection))
+                using (var command = new FbCommand(string.Format(_getColumnsQuery, x.Key), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
                         var column = new DatabaseColumn
                         {
                             Table = x.Value,
-                            Name = reader.GetString(0),
-                            StoreType = reader.GetString(1),
-                            IsNullable = reader.GetString(2) == "YES",
+                            Name = reader.GetString(0).Trim(),
+                            StoreType = reader.GetString(1).Trim(),
+                            IsNullable = reader.GetString(2).Trim() == "YES",
                             DefaultValueSql = reader[3].ToString() == "" ? null : reader[3].ToString(),
                         };
+
+                        if (!string.IsNullOrEmpty(reader.GetString(4)))
+                            column.AddAnnotation("Description", reader.GetString(4).Trim().Replace(Environment.NewLine, "; "));
+
                         x.Value.Columns.Add(column);
                     }
+                Logger.LogDebug($"GetColumns => {x.Value.Columns.Count} columns for table {x.Value.Name}");
             }
         }
 
-        const string GetPrimaryQuery = @"
-select
-    I.rdb$index_name as Index_Name,
-    I.rdb$unique_flag as Non_Unique,
-    I.rdb$relation_name as Columns
-from
-    RDB$INDICES I
-where
-   I.rdb$relation_name = {0}
-   and I.rdb$index_name like 'PK_%'
-group by
-   Index_Name, Non_Unique, Columns";
+        const string GetPrimaryQuery = @"SELECT
+   i.rdb$index_name as index_name,
+   sg.rdb$field_name as field_name
+FROM
+    RDB$INDICES i
+    LEFT JOIN rdb$index_segments sg on i.rdb$index_name = sg.rdb$index_name
+    LEFT JOIN rdb$relation_constraints rc on rc.rdb$index_name = I.rdb$index_name
+WHERE
+    rc.rdb$constraint_type = 'PRIMARY KEY'
+AND
+    i.rdb$relation_name = '{0}'";
 
         /// <remarks>
         /// Primary keys are handled as in <see cref="GetConstraints"/>, not here
@@ -200,42 +225,47 @@ group by
         {
             foreach (var x in _tables)
             {
+                DatabasePrimaryKey index = null;
+
                 using (var command = new FbCommand(string.Format(GetPrimaryQuery, x.Key.Replace("\"", "")), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
-                        try
-                        {
-                            var index = new DatabasePrimaryKey
+                        //try
+                        //{
+                        if (index == null)
+                            index = new DatabasePrimaryKey
                             {
                                 Table = x.Value,
-                                Name = reader.GetString(0),
+                                Name = reader.GetString(0).Trim()
                             };
-                            
-                            foreach (var column in reader.GetString(2).Split(','))
-                            {
-                                index.Columns.Add(x.Value.Columns.Single(y => y.Name == column));
-                            }
-                            
-                            x.Value.PrimaryKey = index;
-                        }
-                        catch { }
+
+                        index.Columns.Add(x.Value.Columns.Single(y => y.Name == reader.GetString(1).Trim()));
+                        //}
+                        //catch { }
                     }
+
+                x.Value.PrimaryKey = index;
+
+                if(x.Value.PrimaryKey != null)
+                    Logger.LogDebug($"GetPrimaryKeys => pk for table {x.Key} found => {x.Value.PrimaryKey.Name} with columns {string.Join(",", x.Value.PrimaryKey.Columns.Select(c=>c.Name))}");
+                else
+                    Logger.LogDebug($"GetPrimaryKeys => pk for table {x.Key} not found");
             }
         }
 
         const string GetIndexesQuery = @"
-select
+SELECT
     I.rdb$index_name as Index_Name,
-    I.rdb$unique_flag as Non_Unique,
+    COALESCE(I.rdb$unique_flag, 0) as Non_Unique,
     I.rdb$relation_name as Columns
-from
-    RDB$INDICES I
-where
-   I.rdb$relation_name = {0}
-   and I.rdb$index_name not like 'PK_%'
-   and I.rdb$index_name not like 'FK_%'
-group by
+FROM
+    RDB$INDICES i
+    LEFT JOIN rdb$index_segments sg on i.rdb$index_name = sg.rdb$index_name
+    LEFT JOIN rdb$relation_constraints rc on rc.rdb$index_name = I.rdb$index_name and rc.rdb$constraint_type = null
+WHERE
+   i.rdb$relation_name = '{0}'
+GROUP BY
    Index_Name, Non_Unique, Columns";
 
         /// <remarks>
@@ -245,20 +275,22 @@ group by
         {
             foreach (var x in _tables)
             {
+                DatabaseIndex index = null;
                 using (var command = new FbCommand(string.Format(GetIndexesQuery, x.Key), _connection))
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
                         try
                         {
-                            var index = new DatabaseIndex
-                            {
-                                Table = x.Value,
-                                Name = reader.GetString(0),
-                                IsUnique = !reader.GetBoolean(1),
-                            };
+                            if(index == null)
+                                index = new DatabaseIndex
+                                {
+                                    Table = x.Value,
+                                    Name = reader.GetString(0).Trim(),
+                                    IsUnique = !reader.GetBoolean(1),
+                                };
 
-                            foreach (var column in reader.GetString(2).Split(','))
+                            foreach (var column in reader.GetString(2).Trim().Split(','))
                             {
                                 index.Columns.Add(x.Value.Columns.Single(y => y.Name == column));
                             }
@@ -267,25 +299,31 @@ group by
                         }
                         catch { }
                     }
+
+                Logger.LogDebug($"GetIndexes => Table {x.Key} => " + (x.Value.Indexes != null ? $"{x.Value.Indexes.Count}" : "0") + " index found");
             }
         }
 
-        const string GetConstraintsQuery = @"SELECT
-    master_index_segments.rdb$index_name as CONSTRAINT_NAME,
-    detail_relation_constraints.RDB$RELATION_NAME as SRC_TABLE_NAME,
-    detail_index_segments.rdb$field_name AS SRC_COLUMN_NAME,
-    master_relation_constraints.rdb$relation_name AS REFERENCED_TABLE_NAME,
-    master_index_segments.rdb$field_name AS fk_field,
-    rdb$ref_constraints.RDB$DELETE_RULE as Delete_Rule
+        const string GetConstraintsQuery = @"
+SELECT
+    drs.rdb$constraint_name as PK_NAME,
+    LIST(distinct trim(dis.rdb$field_name)||'#'||dis.rdb$field_position,',') AS SRC_COLUMN_NAME,
+    mrc.rdb$relation_name AS PRINC_TABLE_NAME,
+    LIST(distinct trim(mis.rdb$field_name)||'#'||mis.rdb$field_position,',') AS PRINC_COLUMN_NAME,
+    rc.RDB$DELETE_RULE as DELETE_RULE
 FROM
-    rdb$relation_constraints detail_relation_constraints
-    JOIN rdb$index_segments detail_index_segments ON detail_relation_constraints.rdb$index_name = detail_index_segments.rdb$index_name 
-    JOIN rdb$ref_constraints ON detail_relation_constraints.rdb$constraint_name = rdb$ref_constraints.rdb$constraint_name -- Master indeksas
-    JOIN rdb$relation_constraints master_relation_constraints ON rdb$ref_constraints.rdb$const_name_uq = master_relation_constraints.rdb$constraint_name
-    JOIN rdb$index_segments master_index_segments ON master_relation_constraints.rdb$index_name = master_index_segments.rdb$index_name
+    rdb$relation_constraints drs
+    left JOIN rdb$index_segments dis ON drs.rdb$index_name = dis.rdb$index_name
+    left JOIN rdb$ref_constraints rc ON drs.rdb$constraint_name = rc.rdb$constraint_name
+    left JOIN rdb$relation_constraints mrc ON rc.rdb$const_name_uq = mrc.rdb$constraint_name
+    left JOIN rdb$index_segments mis ON mrc.rdb$index_name = mis.rdb$index_name
 WHERE
-    detail_relation_constraints.rdb$constraint_type = 'FOREIGN KEY'
-    AND detail_relation_constraints.RDB$RELATION_NAME = {0}";
+    drs.rdb$constraint_type = 'FOREIGN KEY'
+    AND drs.RDB$RELATION_NAME = '{0}'
+GROUP BY
+   drs.rdb$constraint_name,
+   mrc.rdb$relation_name,
+   rc.RDB$DELETE_RULE";
 
         void GetConstraints()
         {
@@ -295,23 +333,63 @@ WHERE
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
-                        if (_tables.ContainsKey($"{ reader.GetString(3) }"))
+                        if (_tables.ContainsKey($"{x.Key}"))
                         {
-                            var fkInfo = new DatabaseForeignKey
+                            DatabaseForeignKey fkInfo = new DatabaseForeignKey
                             {
-                                Name = reader.GetString(0),
-                                OnDelete = ConvertToReferentialAction(reader.GetString(5)),
                                 Table = x.Value,
-                                PrincipalTable = _tables[$"{ reader.GetString(3) }"]
+                                Name = reader.GetString(0).Trim(),
+                                OnDelete = ConvertToReferentialAction(reader.GetString(4)),
+                                PrincipalTable = _tables[reader.GetString(2).Trim()]
                             };
-                            fkInfo.Columns.Add(x.Value.Columns.Single(y => y.Name == reader.GetString(2)));
+
+                            // TODO: the following code is ugly, must refactor (o_0)
+
+                            Logger.LogDebug(
+                                $"   PK ==> Table {x.Value.Name} => {reader.GetString(0).Trim()}, PrincipalTable {fkInfo.PrincipalTable.Name}, FK {reader.GetString(0).Trim()} => {reader.GetString(1).Trim()}, {reader.GetString(3).Trim()}");
+                            
+                            var fkcols = reader.GetString(1).Split(',');
+                            var columns = new string[fkcols.Length];
+
+                            foreach (var colandpos in fkcols)
+                            {
+                                var split = colandpos.Split('#');
+                                columns[int.Parse(split[1])] = split[0];
+                            }
+
+                            foreach (var column in columns)
+                                fkInfo.Columns.Add(x.Value.Columns.Single(y => y.Name == column));
+
+                            var fkcols2 = reader.GetString(1).Split(',');
+                            var columns2 = new string[fkcols2.Length];
+
+                            foreach (var colandpos in fkcols2)
+                            {
+                                var split = colandpos.Split('#');
+                                columns2[int.Parse(split[1])] = split[0];
+                            }
+
+                            /*columns.Clear();
+                            foreach (var colandpos in reader.GetString(3).Split(','))
+                            {
+                                var split = colandpos.Split('#');
+                                columns.Insert(int.Parse(split[1]), split[0]);
+                            }*/
+
+                            foreach (var column in columns2)
+                                fkInfo.PrincipalColumns.Add(x.Value.Columns.Single(y => y.Name == column));
+
+                            //foreach (var column in reader.GetString(3).Split(','))
+                            //    fkInfo.PrincipalColumns.Add(x.Value.Columns.Single(y => y.Name == column));
+                            
                             x.Value.ForeignKeys.Add(fkInfo);
                         }
                         else
                         {
-                            Logger.LogWarning($"Referenced table { reader.GetString(4) } is not in dictionary.");
+                            Logger.LogWarning($"GetConstraints => Referenced table { reader.GetString(3).Trim() } is not in dictionary.");
                         }
                     }
+                Logger.LogDebug($"GetConstraints => Table {x.Key} => {x.Value.ForeignKeys.Count}");
             }
         }
         private static ReferentialAction? ConvertToReferentialAction(string onDeleteAction)

@@ -13,12 +13,14 @@
     <RepositoryUrl>git://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</RepositoryUrl>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <Version>2.0.5-preview5</Version>
+    <Version>2.0.6-preview6</Version>
     <Copyright>SouchProd 2017</Copyright>
     <Company>SouchProd</Company>
     <Authors>Jean Ressouche</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes>Migrations are now working.</PackageReleaseNotes>
+    <PackageReleaseNotes>Scaffolding is operational !</PackageReleaseNotes>
+    <AssemblyVersion>2.0.6.0</AssemblyVersion>
+    <FileVersion>2.0.6.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />

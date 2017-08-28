@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-    <PackageReference Include="SouchProd.EntityFrameworkCore.Firebird" Version="2.0.2" />
+    <PackageReference Include="SouchProd.EntityFrameworkCore.Firebird" Version="2.0.6-preview6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +25,6 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\EFCore.Firebird\EFCore.Firebird.csproj" />
   </ItemGroup>
 
 </Project>

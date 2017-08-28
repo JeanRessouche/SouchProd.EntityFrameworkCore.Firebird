@@ -98,7 +98,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
                 when 16 then
                 case f.rdb$field_sub_type
                     when 0 then 'BIGINT'
-                when 1 then 'NUMERIC'
+                when 1 then 'DECIMAL'
                 when 2 then 'DECIMAL'
                 end
                     when 14 then 'CHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ') '
@@ -109,14 +109,14 @@ namespace Microsoft.EntityFrameworkCore.Internal
                 when 8 then
                 case f.rdb$field_sub_type
                     when 0 then 'INTEGER'
-                when 1 then 'NUMERIC'
+                when 1 then 'DECIMAL'
                 when 2 then 'DECIMAL'
                 end
                     when 7 then
                 case f.rdb$field_sub_type
                     when 0 then 'SMALLINT'
-                when 1 then 'NUMERIC'
-                when 2 then 'DECIMAL'
+                    when 1 then 'DECIMAL'
+                    when 2 then 'DECIMAL'
                 end
                 end as data_type,
                 IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, null, 'NOT NULL') as nullable
