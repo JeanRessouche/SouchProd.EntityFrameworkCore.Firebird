@@ -81,6 +81,7 @@ namespace EFCore.Firebird.FunctionalTests.Tests.Models
         {
             // bool
             Assert.Equal(true, valueDb.TypeBool);
+
             // nullable bool
             Assert.Equal(true, valueDb.TypeBoolN);
 

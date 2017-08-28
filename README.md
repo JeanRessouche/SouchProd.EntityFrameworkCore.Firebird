@@ -8,13 +8,11 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 
 Work in progress at an early stage, **not** production ready, but now beta ready.
  
-  - BLOB & CLOB only partially supported.
+  - Migrations partially supported.
 
   - Table Inludes not yet supported.
 
-  - Scaffolding not yet supported.
-
-  - Migrations not yet supported.
+  - Scaffolding not yet supported.  
   
 ## Roadmap
 
@@ -24,13 +22,13 @@ Version | Content | Status
 **2.0 Preview 2** | **Last inserted id support** | **:heavy_check_mark: Available**
 **2.0 Preview 3** | **Cast, Substring, Replace, Math & other Linq/Db functions support** | **:heavy_check_mark: Available**
 **2.0 Preview 4** | **Migration support** | **:heavy_check_mark: Available**
-2.0 Preview 5 | Read/Write support for the BLOB & CLOB fields | :fire: In progress
+**2.0 Preview 5** | **Read/Write support for the BLOB & CLOB fields** | **:heavy_check_mark: Available**
 2.0 Preview 6 | Scaffolding support | :date: Scheduled
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## Dependencies 
 
-The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/packages/SouchProd.Data.FirebirdClient/) is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly to support .Net standard 2.
+The nuget package [**SouchProd.Data.FirebirdClient**](https://www.nuget.org/packages/SouchProd.Data.FirebirdClient/) is currently required. It will be replaced by the official FirebirdSql.Data.FirebirdClient as soon as it will be updated accordingly to support .Net standard 2 (Will be released soon with the version 5.11.0.0).
 
 ## Compatibility
 

@@ -7,6 +7,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -82,14 +84,120 @@ namespace Microsoft.EntityFrameworkCore.Internal
 
         private static string ExecuteCreateTable(DbConnection connection, ISqlGenerationHelper sqlGenerationHelper, string table, string schema)
         {
+            Debug.WriteLine("ExecuteCreateTable");
+
             using (var cmd = connection.CreateCommand())
             {
-                cmd.CommandText = $"SHOW CREATE TABLE {sqlGenerationHelper.DelimitIdentifier(table, schema)}";
+                cmd.CommandText = $@"select
+                rf.rdb$field_name as column_name,
+                case f.rdb$field_type
+                    when 261 then 'BLOB SUB_TYPE ' || F.RDB$FIELD_SUB_TYPE
+                    when 37 then 'VARCHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ')'
+                when 35 then 'TIMESTAMP'
+                when 27 then 'DOUBLE PRECISION'
+                when 16 then
+                case f.rdb$field_sub_type
+                    when 0 then 'BIGINT'
+                when 1 then 'NUMERIC'
+                when 2 then 'DECIMAL'
+                end
+                    when 14 then 'CHAR(' || (TRUNC(F.RDB$FIELD_LENGTH / CH.RDB$BYTES_PER_CHARACTER)) || ') '
+                when 13 then 'TIME'
+                when 12 then 'DATE'
+                when 10 then 'FLOAT'
+                when 9 then 'QUAD'
+                when 8 then
+                case f.rdb$field_sub_type
+                    when 0 then 'INTEGER'
+                when 1 then 'NUMERIC'
+                when 2 then 'DECIMAL'
+                end
+                    when 7 then
+                case f.rdb$field_sub_type
+                    when 0 then 'SMALLINT'
+                when 1 then 'NUMERIC'
+                when 2 then 'DECIMAL'
+                end
+                end as data_type,
+                IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, null, 'NOT NULL') as nullable
+                    from rdb$fields f
+                join rdb$relation_fields rf on rf.rdb$field_source = f.rdb$field_name
+                    left join rdb$character_sets ch on(CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
+                where rf.rdb$relation_name = '{sqlGenerationHelper.DelimitIdentifier(table, schema)}'";
+
+                Debug.WriteLine("ExecuteCreateTable = > " + cmd.CommandText);
+
+                var sb = new StringBuilder();
+                sb.AppendLine($"CREATE TABLE {sqlGenerationHelper.DelimitIdentifier(table, schema)} (");
+
                 using (var reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read())
-                        return reader.GetFieldValue<string>(1);
+                    while (reader.Read())
+                    {
+                        sb.AppendLine($"{reader.GetFieldValue<string>(0)}   {(reader.GetFieldValue<string>(1) + " " +reader.GetFieldValue<string>(2)).Trim()},");
+                    }
                 }
+
+                sb.AppendLine(");");
+
+                Debug.WriteLine("ExecuteCreateTable = > List PK");
+
+                string GetPrimaryQuery = $@"
+select
+    I.rdb$index_name as Index_Name,
+    I.rdb$unique_flag as Non_Unique,
+    I.rdb$relation_name as Columns
+from
+    RDB$INDICES I
+where
+   I.rdb$relation_name = '{sqlGenerationHelper.DelimitIdentifier(table, schema)}'
+   and I.rdb$index_name like 'PK_%'
+group by
+   Index_Name, Non_Unique, Columns";
+
+                cmd.CommandText = GetPrimaryQuery;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        sb.AppendLine(
+                            $"ALTER TABLE {sqlGenerationHelper.DelimitIdentifier(table, schema)} ADD CONSTRAINT {reader.GetFieldValue<string>(0)} PRIMARY KEY ({reader.GetFieldValue<string>(2)})");
+                    }
+                }
+
+                Debug.WriteLine("ExecuteCreateTable = > List Idx");
+
+                string GetIndexesQuery = $@"
+select
+    I.rdb$index_name as Index_Name,
+    I.rdb$unique_flag as Non_Unique,
+    I.rdb$relation_name as Columns
+from
+    RDB$INDICES I
+where
+   I.rdb$relation_name = '{sqlGenerationHelper.DelimitIdentifier(table, schema)}'
+   and I.rdb$index_name not like 'PK_%'
+   and I.rdb$index_name not like 'FK_%'
+group by
+   Index_Name, Non_Unique, Columns";
+
+                cmd.CommandText = GetIndexesQuery;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        sb.AppendLine(
+                            $"CREATE INDEX {reader.GetFieldValue<string>(0)} ON {sqlGenerationHelper.DelimitIdentifier(table, schema)} ({reader.GetFieldValue<string>(2)})");
+                    }
+                }
+
+                Debug.WriteLine("ExecuteCreateTable = > " + sb.ToString());
+
+                return sb.ToString();
+
+                // TODO: Triggers
             }
             return null;
         }

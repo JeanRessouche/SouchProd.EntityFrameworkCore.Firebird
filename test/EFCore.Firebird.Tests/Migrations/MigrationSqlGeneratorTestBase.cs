@@ -230,15 +230,13 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         }
 
         [Fact]
-        public virtual void RenameTableOperation_within_schema()
+        public virtual void RenameTableOperation()
         {
             Generate(
                 new RenameTableOperation
                 {
                     Name = "People",
-                    Schema = "", // "dbo",
-                    NewName = "Personas",
-                    NewSchema = ""
+                    NewName = "Personas"
                 });
         }
 
@@ -341,7 +339,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                             Name = "SSN",
                             Table = "People",
                             ClrType = typeof(string),
-                            ColumnType = "char(11)",
+                            ColumnType = "varchar(11)",
                             IsNullable = true
                         }
                     },

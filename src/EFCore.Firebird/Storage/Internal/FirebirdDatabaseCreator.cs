@@ -195,8 +195,6 @@ where
         {
             var operations = new MigrationOperation[]
             {
-                // TODO Check DbConnection.Database always gives us what we want
-                // Issue #775
                 new FirebirdDropDatabaseOperation { Name = _connection.DbConnection.Database }
             };
 

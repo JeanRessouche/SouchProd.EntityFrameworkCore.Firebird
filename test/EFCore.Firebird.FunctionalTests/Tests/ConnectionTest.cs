@@ -11,7 +11,7 @@ using Xunit;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests.Connection
+namespace SouchProd.EntityFrameworkCore.Firebird.FunctionalTests.Tests
 {
     public class ConnectionTest
     {

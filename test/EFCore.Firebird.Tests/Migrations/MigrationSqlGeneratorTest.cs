@@ -31,6 +31,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 var commandBuilderFactory = new RelationalCommandBuilderFactory(
                     new FakeDiagnosticsLogger<DbLoggerCategory.Database.Command>(),
                     typeMapper);
+
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
                     new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
@@ -39,10 +40,30 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 var FirebirdOptions = new Mock<IFirebirdOptions>();
                 FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
                     new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("2.1")));
-                
+
+                FirebirdOptions
+                    .Setup(fn =>
+                        fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns("s"
+                    );
+
                 return new FirebirdMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
                     FirebirdOptions.Object);
+
+                //var FbOptions = new FirebirdOptions();
+                //FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
+                ///    new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("2.1")));
+
+                /*FirebirdOptions
+                    .Setup(fn =>
+                        fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns("s"
+                    );*/
+
+                //return new FirebirdMigrationsSqlGenerator(
+                //    migrationsSqlGeneratorDependencies,
+                //    FbOptions);
             }
         }
 
@@ -193,7 +214,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 " AND \"COLUMN_NAME\" = COLUMN_NAME_ARGUMENT" +
 " AND \"COLUMN_TYPE\" LIKE '%int%'" +
 " AND \"COLUMN_KEY\" = 'PRI';" +
-" SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" MODIFY COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');" +
+" SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" ALTER COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');" +
 " SET @SQL_EXP = SQL_EXP;" +
 " PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;" +
 " EXECUTE SQL_EXP_EXECUTE;" +
@@ -233,25 +254,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 "CREATE UNIQUE INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
                 Sql);
         }
-
-        public override void CreateIndexOperation_fulltext()
-        {
-            base.CreateIndexOperation_fulltext();
-
-            Assert.Equal(
-                "CREATE FULLTEXT INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
-                Sql);
-        }
-
-        public override void CreateIndexOperation_spatial()
-        {
-            base.CreateIndexOperation_spatial();
-
-            Assert.Equal(
-                "CREATE SPATIAL INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" (\"FIRSTNAME\", \"LASTNAME\");" + EOL,
-                Sql);
-        }
-
+        
         public override void CreateIndexOperation_nonunique()
         {
             base.CreateIndexOperation_nonunique();
@@ -310,7 +313,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             base.DropColumnOperation();
 
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" DROP COLUMN \"LUCKYNUMBER\";",
+                "ALTER TABLE \"PEOPLE\" DROP \"LUCKYNUMBER\";",
                 Sql);
         }
 
@@ -358,7 +361,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 + " AND \"TABLE_NAME\" = TABLE_NAME_ARGUMENT"
 + " AND \"COLUMN_KEY\" = 'PRI'"
 + " LIMIT 1;"
-+ " SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" MODIFY COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL;');"
++ " SET SQL_EXP = CONCAT('ALTER TABLE \"', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '\".\"', TABLE_NAME_ARGUMENT, '\" ALTER COLUMN \"', PRIMARY_KEY_COLUMN_NAME, '\" ', PRIMARY_KEY_TYPE, ' NOT NULL;');"
 + " SET @SQL_EXP = SQL_EXP;"
 + " PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;"
 + " EXECUTE SQL_EXP_EXECUTE;"
@@ -404,7 +407,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         {
             base.AlterColumnOperation();
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
                 "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" SET DEFAULT 7" + EOL,
             Sql, false, true, true);
         }
@@ -413,7 +416,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         {
             base.AlterColumnOperation_without_column_type();
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" integer NOT NULL;" + EOL +
                 "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"LUCKYNUMBER\" DROP DEFAULT;",
             Sql);
         }
@@ -433,32 +436,14 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 });
 
             Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"GUIDKEY\" char(38) NOT NULL;" + EOL +
+                "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"GUIDKEY\" char(38) NOT NULL;" + EOL +
                 "ALTER TABLE \"PEOPLE\" ALTER COLUMN \"GUIDKEY\" DROP DEFAULT;",
             Sql, false , true, true);
         }
 
         [Theory]
-        [InlineData("tinyblob")]
-        [InlineData("blob")]
-        [InlineData("mediumblob")]
-        [InlineData("longblob")]
-
-        [InlineData("tinytext")]
-        [InlineData("text")]
-        [InlineData("mediumtext")]
-        [InlineData("longtext")]
-
-        [InlineData("geometry")]
-        [InlineData("point")]
-        [InlineData("linestring")]
-        [InlineData("polygon")]
-        [InlineData("multipoint")]
-        [InlineData("multilinestring")]
-        [InlineData("multipolygon")]
-        [InlineData("geometrycollection")]
-
-        [InlineData("json")]
+        [InlineData("BLOB TYPE 1")]
+        [InlineData("BLOB TYPE 0")]
         public void AlterColumnOperation_with_no_default_value_column_types(string type)
         {
             Generate(
@@ -472,99 +457,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                 });
 
             Assert.Equal(
-                $"ALTER TABLE \"PEOPLE\" MODIFY COLUMN \"BLOB\" {type} NULL;" + EOL,
-                Sql);
+                $"ALTER TABLE \"PEOPLE\" ALTER COLUMN \"BLOB\" {type} NULL;" + EOL,
+                Sql, false, true, true);
         }
 
         #endregion
 
-        #region Npgsql-specific
-
-        [Fact(Skip = "true")]
-        public void CreateIndexOperation_method()
-        {
-            Generate(new CreateIndexOperation
-            {
-                Name = "IX_People_Name",
-                Table = "People",
-                Schema = "", // "dbo",
-                Columns = new[] { "FirstName" },
-                //[FirebirdAnnotationNames.Prefix + FirebirdAnnotationNames.IndexMethod] = "gin"
-            });
-
-            Assert.Equal(
-                "CREATE INDEX \"IX_PEOPLE_NAME\" ON \"PEOPLE\" USING gin (\"FIRSTNAME\");" + EOL,
-                Sql);
-        }
-
-        [Fact]
-        public void CreateFirebirdDatabase()
-        {
-            Generate(new FirebirdCreateDatabaseOperation
-            {
-                Name = "hstore",
-            });
-
-            Assert.Equal(
-                "CREATE DATABASE \"HSTORE\"" + EOL,
-                Sql);
-        }
-
-        [Fact]
-        public virtual void AddColumnOperation_serial()
-        {
-            Generate(new AddColumnOperation
-            {
-                Table = "People",
-                Name = "foo",
-                ClrType = typeof(int),
-                ColumnType = "integer",
-                IsNullable = false,
-                [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
-            });
-
-            Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" integer NOT NULL AUTO_INCREMENT;" + EOL,
-                Sql);
-        }
-
-        [Fact]
-        public virtual void AddColumnOperation_with_int_defaultValue_isnt_serial()
-        {
-            Generate(
-                new AddColumnOperation
-                {
-                    Table = "People",
-                    Name = "foo",
-                    ClrType = typeof(int),
-                    ColumnType = "integer",
-                    IsNullable = false,
-                    DefaultValue = 8
-                });
-
-            Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" integer NOT NULL DEFAULT 8;" + EOL,
-                Sql);
-        }
-
-        [Fact]
-        public virtual void AddColumnOperation_with_dbgenerated_uuid()
-        {
-            Generate(
-                new AddColumnOperation
-                {
-                    Table = "People",
-                    Name = "foo",
-                    ClrType = typeof(Guid),
-                    ColumnType = "varchar(38)",
-                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
-                });
-
-            Assert.Equal(
-                "ALTER TABLE \"PEOPLE\" ADD \"FOO\" varchar(38) NOT NULL;" + EOL,
-                Sql);
-        }
-
-        #endregion
     }
 }

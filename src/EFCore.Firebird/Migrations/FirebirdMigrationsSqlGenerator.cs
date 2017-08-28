@@ -65,7 +65,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
-            var alterBase = $"ALTER TABLE {identifier} DROP COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
+            var alterBase = $"ALTER TABLE {identifier} DROP {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
             builder.Append(alterBase).Append(Dependencies.SqlGenerationHelper.StatementTerminator);
             EndStatement(builder);
         }
@@ -85,7 +85,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             }
 
             var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
-            var alterBase = $"ALTER TABLE {identifier} MODIFY COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
+            var alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
 
             // TYPE
             builder.Append(alterBase)
@@ -94,56 +94,29 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append(operation.IsNullable ? " NULL" : " NOT NULL")
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
-            switch (type)
+            if(!type.StartsWith("BLOB", StringComparison.Ordinal))
             {
-                case "tinyblob":
-                case "blob":
-                case "mediumblob":
-                case "longblob":
+                alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
 
-                case "tinytext":
-                case "text":
-                case "mediumtext":
-                case "longtext":
+                builder.Append(alterBase);
 
-                case "geometry":
-                case "point":
-                case "linestring":
-                case "polygon":
-                case "multipoint":
-                case "multilinestring":
-                case "multipolygon":
-                case "geometrycollection":
-
-                case "json":
-                    if (operation.DefaultValue != null || !string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                    {
-                        throw new NotSupportedException($"{type} column can't have a default value");
-                    }
-                    break;
-                default:
-                    alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
-
-                    builder.Append(alterBase);
-
-                    if (operation.DefaultValue != null)
-                    {
-                        var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
-                        builder.Append(" SET DEFAULT ")
-                            .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
-                            .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                    {
-                        builder.Append(" SET DEFAULT ")
-                            .Append(operation.DefaultValueSql)
-                            .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                    }
-                    else
-                    {
-                        builder.Append(" DROP DEFAULT;");
-                    }
-                    break;
+                if (operation.DefaultValue != null)
+                {
+                    var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
+                    builder.Append(" SET DEFAULT ")
+                        .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                }
+                else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
+                {
+                    builder.Append(" SET DEFAULT ")
+                        .Append(operation.DefaultValueSql)
+                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                }
+                else
+                {
+                    builder.Append(" DROP DEFAULT;");
+                }
             }
 
             EndStatement(builder);
@@ -161,50 +134,36 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
             if (operation.NewName != null)
             {
-                if (_options.ConnectionSettings.ServerVersion.SupportsRenameIndex)
-                {
-                    builder.Append("ALTER TABLE ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                        .Append(" RENAME INDEX ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                        .Append(" TO ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-                        .AppendLine(";");
+                var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
 
-                    EndStatement(builder);
-                }
+                if (createTableSyntax == null)
+                    throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
+
+                var indexDefinitionRe = new Regex($"^\\s*((?:UNIQUE\\s)?KEY\\s)?{operation.Name}?(.*)$", RegexOptions.Multiline);
+                var match = indexDefinitionRe.Match(createTableSyntax);
+
+                string newIndexDefinition;
+                if (match.Success)
+                    newIndexDefinition = match.Groups[1].Value + Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName) + " " + match.Groups[2].Value.Trim().TrimEnd(',');
                 else
-                {   
-                    var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
+                    throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
 
-                    if (createTableSyntax == null)
-                        throw new InvalidOperationException($"Could not find SHOW CREATE TABLE syntax for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
-
-                    var indexDefinitionRe = new Regex($"^\\s*((?:UNIQUE\\s)?KEY\\s)?{operation.Name}?(.*)$", RegexOptions.Multiline);
-                    var match = indexDefinitionRe.Match(createTableSyntax);
-
-                    string newIndexDefinition;
-                    if (match.Success)
-                        newIndexDefinition = match.Groups[1].Value + Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName) + " " + match.Groups[2].Value.Trim().TrimEnd(',');
-                    else
-                        throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
-
-                    builder
-                        .Append("ALTER TABLE ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                        .Append(" DROP INDEX ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                        .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                    EndStatement(builder);
+                builder
+                    .Append("ALTER TABLE ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                    .Append(" DROP INDEX ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+                EndStatement(builder);
                                 
-                    builder
-                        .Append("ALTER TABLE ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                        .Append(" ADD ")
-                        .Append(newIndexDefinition)
-                        .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                    EndStatement(builder);
-                }
+                builder
+                    .Append("ALTER TABLE ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                    .Append(" ADD ")
+                    .Append(newIndexDefinition)
+                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+
+                EndStatement(builder);
             }
         }
 
@@ -217,12 +176,20 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
+            
+            // In Progress: Create a new temp table, move the data into, delete previous table.
+
+            var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Name, operation.Schema);
+
+            createTableSyntax = createTableSyntax?.Replace(operation.Name, operation.NewName) ?? throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}'");
+
+            builder.Append(createTableSyntax);
 
             builder
-                .Append("ALTER TABLE")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema))
-                .Append(" RENAME ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName, operation.NewSchema));
+                .Append("INSERT INTO")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName, operation.Schema))
+                .Append(" SELECT * FROM ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.NewSchema));
 
             EndStatement(builder);
         }
@@ -230,22 +197,12 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         protected override void Generate([NotNull] CreateIndexOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder, bool terminate)
         {
             var method = (string)operation[FirebirdAnnotationNames.Prefix];
-            var isFullText = !string.IsNullOrEmpty((string)operation[FirebirdAnnotationNames.FullTextIndex]);
-            var isSpatial = !string.IsNullOrEmpty((string)operation[FirebirdAnnotationNames.SpatialIndex]);
 
             builder.Append("CREATE ");
 
             if (operation.IsUnique)
             {
                 builder.Append("UNIQUE ");
-            }
-            else if (isFullText)
-            {
-                builder.Append("FULLTEXT ");
-            }
-            else if (isSpatial)
-            {
-                builder.Append("SPATIAL ");
             }
 
             builder
@@ -350,7 +307,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
 
             if (createTableSyntax == null)
-                throw new InvalidOperationException($"Could not find SHOW CREATE TABLE syntax for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
+                throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
 
             var columnDefinitionRe = new Regex($"^\\s*?{operation.Name}?\\s(.*)?$", RegexOptions.Multiline);
             var match = columnDefinitionRe.Match(createTableSyntax);
@@ -560,7 +517,7 @@ BEGIN
 				AND COLUMN_NAME = COLUMN_NAME_ARGUMENT
 				AND COLUMN_TYPE LIKE '%int%'
 				AND COLUMN_KEY = 'PRI';
-		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' MODIFY COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');
+		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' ALTER COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');
 		SET @SQL_EXP = SQL_EXP;
 		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
 		EXECUTE SQL_EXP_EXECUTE;
@@ -620,7 +577,7 @@ BEGIN
 				AND TABLE_NAME = TABLE_NAME_ARGUMENT
 				AND COLUMN_KEY = 'PRI'
 			LIMIT 1;
-		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' MODIFY COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL;');
+		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' ALTER COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL;');
 		SET @SQL_EXP = SQL_EXP;
 		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
 		EXECUTE SQL_EXP_EXECUTE;
