@@ -36,7 +36,7 @@ If you are starting from an **existing** database (Database First), you should u
 
 Under VS2017, open a Package Manager console in your project and execute the scaffold command as below (you must adapt the parameters):
 
-  `Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=PATH_OR_ALIAS_TO_YOUR_DB_HERE;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;" "souchprod.EntityFrameworkCore.Firebird" -OutputDir Entities --Context CardioXpDb -DataAnnotations -force -verbose`
+  `Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=PATH_OR_ALIAS_TO_YOUR_DB_HERE;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;" "souchprod.EntityFrameworkCore.Firebird" -OutputDir Entities -Context "YourDbContextName" -force -verbose`
 
 If you are in a CODE FIRST mode, you should use the **Migrations** system. Please refert to the [relevant documentation](http://www.learnentityframeworkcore.com/migrations).
 

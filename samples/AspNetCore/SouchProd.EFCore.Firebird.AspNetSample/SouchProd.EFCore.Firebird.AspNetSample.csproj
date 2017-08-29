@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-    <PackageReference Include="SouchProd.EntityFrameworkCore.Firebird" Version="2.0.6-preview6" />
+    <PackageReference Include="SouchProd.EntityFrameworkCore.Firebird" Version="2.0.7-preview7" />
   </ItemGroup>
 
   <ItemGroup>
