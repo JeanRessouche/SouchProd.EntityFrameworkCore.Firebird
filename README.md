@@ -24,7 +24,7 @@ Version | Content | Status
 **2.0 Preview 4** | **Migration support** | **:heavy_check_mark: Available**
 **2.0 Preview 5** | **Read/Write support for the BLOB & CLOB fields** | **:heavy_check_mark: Available**
 **2.0 Preview 6** | **:exclamation: Scaffolding support** | **:heavy_check_mark: Available**
-2.0 Preview N | BugFix, tests improvements, samples improvements | :flame: In progress
+2.0 Preview N | BugFix, tests improvements, samples improvements | :fire: In progress
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
 ## How-to
