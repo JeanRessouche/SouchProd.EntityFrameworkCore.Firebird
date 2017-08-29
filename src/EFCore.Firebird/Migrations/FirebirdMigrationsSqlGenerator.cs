@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using FirebirdSql.Data.FirebirdClient;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
@@ -243,42 +244,17 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
         protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-
-            builder
-                .AppendLine($"DROP PROCEDURE IF EXISTS Firebird_ef_ensure_schema;")
-                .AppendLine($"CREATE PROCEDURE Firebird_ef_ensure_schema()")
-                .AppendLine($"BEGIN")
-                .AppendLine($"    IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{ operation.Name }')")
-                .AppendLine($"    THEN")
-                .AppendLine($"        CREATE DATABASE { operation.Name };")
-                .AppendLine($"    END IF;")
-                .AppendLine($"END;")
-                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+            throw new NotSupportedException("Firebird doesn't support EnsureSchema operation.");
         }
 
         public virtual void Generate(FirebirdCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-
-            builder
-                .Append("CREATE DATABASE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+            throw new NotSupportedException("Firebird doesn't support CreateDatabase operation.");
         }
 
         public virtual void Generate(FirebirdDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-
-            var dbName = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name);
-
-            builder
-                .Append("DROP DATABASE ")
-                .Append(dbName);
+            throw new NotSupportedException("Firebird doesn't support DropDatabase operation.");
         }
 
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -289,7 +265,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             builder
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP INDEX ")
+                .Append(" DROP CONSTRAINT ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
@@ -304,29 +280,13 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
 
-            var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
-
-            if (createTableSyntax == null)
-                throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
-
-            var columnDefinitionRe = new Regex($"^\\s*?{operation.Name}?\\s(.*)?$", RegexOptions.Multiline);
-            var match = columnDefinitionRe.Match(createTableSyntax);
-
-            string columnDefinition;
-            if (match.Success)
-                columnDefinition = match.Groups[1].Value.Trim().TrimEnd(',');
-            else
-                throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
-
             builder.Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" CHANGE ")
+                .Append(" ALTER ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .Append(" ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-                .Append(" ")
-                .Append(columnDefinition);
-
+                .Append(" TO ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
+                
             EndStatement(builder);
         }
 
@@ -454,7 +414,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             builder
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP FOREIGN KEY ")
+                .Append(" DROP CONSTRAINT ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
@@ -470,131 +430,30 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
                 .Append(" ADD ");
+           
             PrimaryKeyConstraint(operation, model, builder);
+
             builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
             var annotations = model.GetAnnotations();
             if (operation.Columns.Count() == 1)
             {
-                builder.Append(@"DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;
-CREATE PROCEDURE POMELO_AFTER_ADD_PRIMARY_KEY(IN SCHEMA_NAME_ARGUMENT VARCHAR(255), IN TABLE_NAME_ARGUMENT VARCHAR(255), IN COLUMN_NAME_ARGUMENT VARCHAR(255))
-BEGIN
-	DECLARE HAS_AUTO_INCREMENT_ID INT(11);
-	DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);
-	DECLARE PRIMARY_KEY_TYPE VARCHAR(255);
-	DECLARE SQL_EXP VARCHAR(1000);
-
-	SELECT COUNT(*) 
-		INTO HAS_AUTO_INCREMENT_ID 
-		FROM information_schema.COLUMNS
-		WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-			AND TABLE_NAME = TABLE_NAME_ARGUMENT
-			AND COLUMN_NAME = COLUMN_NAME_ARGUMENT
-			AND COLUMN_TYPE LIKE '%int%'
-			AND COLUMN_KEY = 'PRI';
-	IF HAS_AUTO_INCREMENT_ID THEN
-		SELECT COLUMN_TYPE
-			INTO PRIMARY_KEY_TYPE
-			FROM information_schema.COLUMNS
-			WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND TABLE_NAME = TABLE_NAME_ARGUMENT
-				AND COLUMN_NAME = COLUMN_NAME_ARGUMENT
-				AND COLUMN_TYPE LIKE '%int%'
-				AND COLUMN_KEY = 'PRI';
-		SELECT COLUMN_NAME
-			INTO PRIMARY_KEY_COLUMN_NAME
-			FROM information_schema.COLUMNS
-			WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND TABLE_NAME = TABLE_NAME_ARGUMENT
-				AND COLUMN_NAME = COLUMN_NAME_ARGUMENT
-				AND COLUMN_TYPE LIKE '%int%'
-				AND COLUMN_KEY = 'PRI';
-		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' ALTER COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL AUTO_INCREMENT;');
-		SET @SQL_EXP = SQL_EXP;
-		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
-		EXECUTE SQL_EXP_EXECUTE;
-		DEALLOCATE PREPARE SQL_EXP_EXECUTE;
-	END IF;
-END;");
-                builder.AppendLine();
-
-                if (operation.Schema == null)
-                {
-                    builder.Append($"CALL POMELO_AFTER_ADD_PRIMARY_KEY(NULL, '{ operation.Table }', '{ operation.Columns.First() }');");
-                }
-                else
-                {
-                    builder.Append($"CALL POMELO_AFTER_ADD_PRIMARY_KEY('{ operation.Schema }', '{ operation.Table }', '{ operation.Columns.First() }');");
-                }
-                builder.AppendLine();
-                builder.Append($"DROP PROCEDURE IF EXISTS POMELO_AFTER_ADD_PRIMARY_KEY;");
-                builder.AppendLine();
+                // TODO
             }
 
             EndStatement(builder);
         }
 
-        protected override void Generate([NotNull] DropPrimaryKeyOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
+        protected override void Generate([NotNull] DropPrimaryKeyOperation operation, [CanBeNull] IModel model,
+            [NotNull] MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
-            builder.Append(@"DROP PROCEDURE IF EXISTS POMELO_BEFORE_DROP_PRIMARY_KEY;
-CREATE PROCEDURE POMELO_BEFORE_DROP_PRIMARY_KEY(IN SCHEMA_NAME_ARGUMENT VARCHAR(255), IN TABLE_NAME_ARGUMENT VARCHAR(255))
-BEGIN
-	DECLARE HAS_AUTO_INCREMENT_ID TINYINT(1);
-	DECLARE PRIMARY_KEY_COLUMN_NAME VARCHAR(255);
-	DECLARE PRIMARY_KEY_TYPE VARCHAR(255);
-	DECLARE SQL_EXP VARCHAR(1000);
-
-	SELECT COUNT(*) 
-		INTO HAS_AUTO_INCREMENT_ID 
-		FROM information_schema.COLUMNS
-		WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-			AND TABLE_NAME = TABLE_NAME_ARGUMENT
-			AND Extra = 'auto_increment'
-			AND COLUMN_KEY = 'PRI'
-			LIMIT 1;
-	IF HAS_AUTO_INCREMENT_ID THEN
-		SELECT COLUMN_TYPE
-			INTO PRIMARY_KEY_TYPE
-			FROM information_schema.COLUMNS
-			WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND TABLE_NAME = TABLE_NAME_ARGUMENT
-				AND COLUMN_KEY = 'PRI'
-			LIMIT 1;
-		SELECT COLUMN_NAME
-			INTO PRIMARY_KEY_COLUMN_NAME
-			FROM information_schema.COLUMNS
-			WHERE TABLE_SCHEMA = (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA()))
-				AND TABLE_NAME = TABLE_NAME_ARGUMENT
-				AND COLUMN_KEY = 'PRI'
-			LIMIT 1;
-		SET SQL_EXP = CONCAT('ALTER TABLE ', (SELECT IFNULL(SCHEMA_NAME_ARGUMENT, SCHEMA())), '.', TABLE_NAME_ARGUMENT, ' ALTER COLUMN ', PRIMARY_KEY_COLUMN_NAME, ' ', PRIMARY_KEY_TYPE, ' NOT NULL;');
-		SET @SQL_EXP = SQL_EXP;
-		PREPARE SQL_EXP_EXECUTE FROM @SQL_EXP;
-		EXECUTE SQL_EXP_EXECUTE;
-		DEALLOCATE PREPARE SQL_EXP_EXECUTE;
-	END IF;
-END;");
-            builder.AppendLine();
-
-            if (String.IsNullOrWhiteSpace(operation.Schema))
-            {
-                builder.Append($"CALL POMELO_BEFORE_DROP_PRIMARY_KEY(NULL, '{ operation.Table }');");
-            }
-            else
-            {
-                builder.Append($"CALL POMELO_BEFORE_DROP_PRIMARY_KEY('{ operation.Schema }', '{ operation.Table }');");
-            }
-            builder.AppendLine();
-            builder.Append($"DROP PROCEDURE IF EXISTS POMELO_BEFORE_DROP_PRIMARY_KEY;");
-            builder.AppendLine();
-
             builder
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP PRIMARY KEY;")
-                .AppendLine();
+                .Append(" DROP CONSTRAINT ")
+                .Append(operation.Name);
 
             EndStatement(builder);
         }
@@ -616,31 +475,10 @@ END;");
                 .Append("ALTER ")
                 .Append(type)
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
-                .Append(" RENAME TO ")
+                .Append(" TO ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
         }
-
-        public virtual void Transfer(
-            [NotNull] string newSchema,
-            [CanBeNull] string schema,
-            [NotNull] string name,
-            [NotNull] string type,
-            [NotNull] MigrationCommandListBuilder builder)
-        {
-            Check.NotEmpty(newSchema, nameof(newSchema));
-            Check.NotEmpty(name, nameof(name));
-            Check.NotNull(type, nameof(type));
-            Check.NotNull(builder, nameof(builder));
-
-            builder
-                .Append("ALTER ")
-                .Append(type)
-                .Append(" ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
-                .Append(" SET SCHEMA ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newSchema));
-        }
-
+        
         protected override void ForeignKeyAction(ReferentialAction referentialAction, MigrationCommandListBuilder builder)
         {
             Check.NotNull(builder, nameof(builder));

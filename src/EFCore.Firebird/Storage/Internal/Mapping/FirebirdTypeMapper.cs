@@ -110,7 +110,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "BLOB SUB_TYPE 1", _json },
                    // { "text", _varcharmax },
                    // { "mediumtext", _varcharmax },
-                   // { "longtext", _varcharmax },
+                   // { "varchar(4000)", _varcharmax },
 
                     // DateTime
                     { "date", _timeStamp },

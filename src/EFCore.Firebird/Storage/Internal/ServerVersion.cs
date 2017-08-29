@@ -27,6 +27,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             // https://www.firebirdnews.org/firebird-support-for-identity-columns-in-3-0/
             IdentityColumnsSupported = Version.Major >= 3;
 
+            BooleanDataTypeSupported = Version.Major >= 3;
+
+            RegexInSubStringSupported = Version.Major >= 3;
+
             // http://web.firebirdsql.org/downloads/prerelease/v40alpha1/Firebird-4.0.0_Alpha1-ReleaseNotes.pdf
             MetadataMaxLength = (Version.Major >= 4) ? 63 : 31;
         }
@@ -36,6 +40,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public readonly Version Version;
 
         public Boolean IdentityColumnsSupported { get; }
+
+        public Boolean BooleanDataTypeSupported { get; }
+
+        public Boolean RegexInSubStringSupported { get; }
 
         public int MetadataMaxLength { get; }
     }
