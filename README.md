@@ -1,4 +1,7 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget]  [![NuGet][pre-nuget-badge]][pre-nuget] [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
+[![NuGet][main-nuget-badge]][main-nuget]
+[![NuGet][pre-nuget-badge]][pre-nuget]
+[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
 
 # SouchProd.EntityFrameworkCore.Firebird
 
@@ -73,4 +76,4 @@ This project couldn´t exist without the [.NET Firebird Client](https://github.c
 [main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget 
 
 [pre-nuget]: https://www.nuget.org/packages/SouchProd.EntityFrameworkCore.Firebird/
-[pre-nuget-badge]: https://img.shields.io/nuget/vpre/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget
+[pre-nuget-badge]: https://img.shields.io/nuget/vpre/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget%20pre-release
