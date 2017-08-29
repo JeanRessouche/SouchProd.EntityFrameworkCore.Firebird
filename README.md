@@ -6,9 +6,7 @@ SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider buil
 
 ## Status
 
-Work in progress at an early stage, **not** production ready, but now beta ready.
- 
-  - Migrations partially supported.
+Work in progress at an early stage, **not** production ready, but now beta ready. 
 
   - Table Inludes not yet supported.
   
@@ -26,9 +24,10 @@ Version | Content | Status
 **2.0 Preview 4** | **Migration support** | **:heavy_check_mark: Available**
 **2.0 Preview 5** | **Read/Write support for the BLOB & CLOB fields** | **:heavy_check_mark: Available**
 **2.0 Preview 6** | **:exclamation: Scaffolding support** | **:heavy_check_mark: Available**
+2.0 Preview N | BugFix, tests improvements, samples improvements | :fire: In progress
 2.0 Final | Cleanup, refactoring and perf tuning | :confetti_ball: Scheduled
 
-## Hot-to
+## How-to
 
 I recommend you [this lecture](http://www.learnentityframeworkcore.com/) to discover more about Entity Core.
 
