@@ -231,8 +231,6 @@ AND
                 using (var reader = command.ExecuteReader())
                     while (reader.Read())
                     {
-                        //try
-                        //{
                         if (index == null)
                             index = new DatabasePrimaryKey
                             {
@@ -241,8 +239,6 @@ AND
                             };
 
                         index.Columns.Add(x.Value.Columns.Single(y => y.Name == reader.GetString(1).Trim()));
-                        //}
-                        //catch { }
                     }
 
                 x.Value.PrimaryKey = index;
@@ -346,7 +342,7 @@ GROUP BY
                             // TODO: the following code is ugly, must refactor (o_0)
 
                             Logger.LogDebug(
-                                $"   PK ==> Table {x.Value.Name} => {reader.GetString(0).Trim()}, PrincipalTable {fkInfo.PrincipalTable.Name}, FK {reader.GetString(0).Trim()} => {reader.GetString(1).Trim()}, {reader.GetString(3).Trim()}");
+                                $"   PK ==> Table {x.Value.Name} => {fkInfo.Name}, PrincipalTable {fkInfo.PrincipalTable.Name}, {reader.GetString(1).Trim()}, {reader.GetString(3).Trim()}");
                             
                             var fkcols = reader.GetString(1).Split(',');
                             var columns = new string[fkcols.Length];
@@ -360,7 +356,7 @@ GROUP BY
                             foreach (var column in columns)
                                 fkInfo.Columns.Add(x.Value.Columns.Single(y => y.Name == column));
 
-                            var fkcols2 = reader.GetString(1).Split(',');
+                            var fkcols2 = reader.GetString(3).Split(',');
                             var columns2 = new string[fkcols2.Length];
 
                             foreach (var colandpos in fkcols2)
