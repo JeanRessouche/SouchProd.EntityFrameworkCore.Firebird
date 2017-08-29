@@ -31,7 +31,7 @@ Version | Content | Status
 
 I recommend you [this lecture](http://www.learnentityframeworkcore.com/) to discover more about Entity Core.
 
-If you are starting from an **existing** database (Database First), you should use the Scaffolding capability. It will create your DbContext the classes for all the discovered entities (do not foget, all your tables need a PK to match EntityFramework needs!) and the FluentApi description. Look at the [decicated sample here](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/tree/master/samples/ScaffoldingConsoleApp)
+If you are starting from an **existing** database (Database First), you should use the Scaffolding capability. It will create your DbContext the classes for all the discovered entities (do not foget, all your tables need a PK to match EntityFramework needs!) and the FluentApi description. Look at the [decicated sample here](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/tree/master/samples/ScaffoldingConsoleApp).
 
 
 If you are in a CODE FIRST mode, you should use the **Migrations** system. Please refert to the [relevant documentation](http://www.learnentityframeworkcore.com/migrations).
