@@ -1,7 +1,7 @@
 [![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
 [![NuGet][main-nuget-badge]][main-nuget]
 [![NuGet][pre-nuget-badge]][pre-nuget]
-[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
+[![license](https://img.shields.io/apm/l/vim-mode.svg)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
 
 # SouchProd.EntityFrameworkCore.Firebird
 
