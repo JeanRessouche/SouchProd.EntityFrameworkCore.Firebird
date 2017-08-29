@@ -32,11 +32,6 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     new FakeDiagnosticsLogger<DbLoggerCategory.Database.Command>(),
                     typeMapper);
 
-                var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
-                    commandBuilderFactory,
-                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
-                    typeMapper);
-
                 var FirebirdOptions = new Mock<IFirebirdOptions>();
                 FirebirdOptions.SetupGet(opts => opts.ConnectionSettings).Returns(
                     new FbConnectionSettings(new FbConnectionStringBuilder(), new ServerVersion("2.1")));
@@ -46,6 +41,12 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                         fn.GetCreateTable(It.IsAny<ISqlGenerationHelper>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Returns("s"
                     );
+
+                var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
+                    commandBuilderFactory,
+                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
+                    , FirebirdOptions.Object),
+                    typeMapper);
 
                 return new FirebirdMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,

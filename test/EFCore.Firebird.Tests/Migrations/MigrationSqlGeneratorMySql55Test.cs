@@ -54,7 +54,8 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     typeMapper);
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
-                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()),
+                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
+                    , FirebirdOptions.Object),
                     typeMapper);
                 
                 return new FirebirdMigrationsSqlGenerator(
