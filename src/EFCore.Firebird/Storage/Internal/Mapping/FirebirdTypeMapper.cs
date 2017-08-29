@@ -51,8 +51,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	    private readonly FirebirdStringTypeMapping _varcharmax      = new FirebirdStringTypeMapping("varchar(4000)", DbType.AnsiString);
 
 	    // DateTime
-        private readonly FirebirdDateTimeOffsetTypeMapping _timeStamp = new FirebirdDateTimeOffsetTypeMapping("TIMESTAMP", DbType.DateTime);
-        private readonly TimeSpanTypeMapping _time                       = new TimeSpanTypeMapping("time", DbType.Time);
+        private readonly FirebirdDateTimeTypeMapping _timeStamp = new FirebirdDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly TimeSpanTypeMapping _time              = new TimeSpanTypeMapping("time", DbType.Time);
 
         // json
         private readonly RelationalTypeMapping _json = new FirebirdStringTypeMapping("BLOB SUB_TYPE 1 SEGMENT SIZE 80", DbType.AnsiString);

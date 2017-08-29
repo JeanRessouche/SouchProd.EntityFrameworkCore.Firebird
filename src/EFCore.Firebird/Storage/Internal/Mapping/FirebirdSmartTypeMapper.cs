@@ -19,7 +19,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     public class FirebirdSmartTypeMapper : FirebirdTypeMapper
     {
         private static readonly FirebirdDateTimeTypeMapping DateTime             = new FirebirdDateTimeTypeMapping("timestamp", DbType.DateTime);
-        private static readonly FirebirdDateTimeOffsetTypeMapping DateTimeOffset = new FirebirdDateTimeOffsetTypeMapping("timestamp", DbType.DateTime);
         private static readonly TimeSpanTypeMapping Time                 = new TimeSpanTypeMapping("time", DbType.Time);
         private static readonly GuidTypeMapping Guid                  = new GuidTypeMapping("char(38)", DbType.Guid);
 

@@ -26,7 +26,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 { typeof(int), "VARCHAR(11)" },
                 { typeof(long), "VARCHAR(20)" },
                 { typeof(DateTime), $"VARCHAR({DefaultLength})" },
-                { typeof(Guid), "VARCHAR(36)" },
+                { typeof(Guid), "CHAR(36)" },
                 { typeof(bool), "VARCHAR(5)" },
                 { typeof(byte), "VARCHAR(3)" },
                 { typeof(byte[]), $"VARCHAR({DefaultLength})" },
