@@ -13,12 +13,15 @@
     <RepositoryUrl>git://github.com/SouchProd/SouchProd.EntityFrameworkCore.Firebird</RepositoryUrl>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <Version>2.0.7-preview8</Version>
+    <Version>2.0.7</Version>
     <Copyright>SouchProd 2017</Copyright>
     <Company>SouchProd</Company>
     <Authors>Jean Ressouche</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes>DateTimeOffset isssue in Scaffolding resolved.</PackageReleaseNotes>
+    <PackageReleaseNotes>+ Scaffolding implemented.
++ Migrations implemented.
++ Most types are supported.
+- Includes are not working yet.</PackageReleaseNotes>
     <AssemblyVersion>2.0.7.1</AssemblyVersion>
     <FileVersion>2.0.7.1</FileVersion>
   </PropertyGroup>
