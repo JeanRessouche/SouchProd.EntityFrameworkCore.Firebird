@@ -31,15 +31,12 @@ Version | Content | Status
 
 I recommend you [this lecture](http://www.learnentityframeworkcore.com/) to discover more about Entity Core.
 
-If you are starting from an **existing** database (Database First), you should use the Scaffolding capability. It will create your DbContext the classes for all the discovered entities (do not foget, all your tables need a PK to match EntityFramework needs!) and the FluentApi description.
+If you are starting from an **existing** database (Database First), you should use the Scaffolding capability. It will create your DbContext the classes for all the discovered entities (do not foget, all your tables need a PK to match EntityFramework needs!) and the FluentApi description. Look at the [decicated sample here](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/tree/master/samples/ScaffoldingConsoleApp).
 
-Under VS2017, open a Package Manager console in your project and execute the scaffold command as below (you must adapt the parameters):
-
-  `Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=PATH_OR_ALIAS_TO_YOUR_DB_HERE;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;" "souchprod.EntityFrameworkCore.Firebird" -OutputDir Entities -Context "YourDbContextName" -force -verbose`
 
 If you are in a CODE FIRST mode, you should use the **Migrations** system. Please refert to the [relevant documentation](http://www.learnentityframeworkcore.com/migrations).
 
-Please refer to the (Asp.Net Core sample application)[https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/tree/master/samples/AspNetCore] in this repo for guidance.
+Please refer to the [Asp.Net Core sample application](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/tree/master/samples/AspNetCore) in this repo for guidance.
 
 ## Dependencies 
 
