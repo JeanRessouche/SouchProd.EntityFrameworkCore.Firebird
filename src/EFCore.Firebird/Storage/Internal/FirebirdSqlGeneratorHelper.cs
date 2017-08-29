@@ -4,21 +4,32 @@
 // and from the Pomelo Foundation Mysql provider repository (MIT licence).
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
-using System;
-using System.Globalization;
 using System.Text;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FirebirdSqlGenerationHelper : RelationalSqlGenerationHelper
     {
-        public FirebirdSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies)
+        public FirebirdSqlGenerationHelper(
+            [NotNull] RelationalSqlGenerationHelperDependencies dependencies,
+            [NotNull] IFirebirdOptions options
+            )
             : base(dependencies)
         {
+            _options = options;
+            _maxLength = _options.ConnectionSettings.ServerVersion.MetadataMaxLength;
         }
+
+        private readonly IFirebirdOptions _options;
+
+        private readonly int _maxLength;
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -34,9 +45,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override void EscapeIdentifier(StringBuilder builder, string identifier)
         {
             Check.NotEmpty(identifier, nameof(identifier));
-
+            
             var initialLength = builder.Length;
-            builder.Append(identifier);
+            builder.Append(identifier.LimitLength(_maxLength));
             builder.Replace("\"", "\"\"", initialLength, identifier.Length);
         }
 
@@ -45,7 +56,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override string DelimitIdentifier(string identifier)
-            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier))).ToUpperInvariant()}\""; // Interpolation okay; strings
+            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier.LimitLength(_maxLength), nameof(identifier))).ToUpperInvariant()}\""; // Interpolation okay; strings
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -54,7 +65,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             Check.NotEmpty(identifier, nameof(identifier));
             builder.Append('"');
-            EscapeIdentifier(builder, identifier.ToUpperInvariant());
+            EscapeIdentifier(builder, identifier.LimitLength(_maxLength).ToUpperInvariant());
             builder.Append('"');
         }
 
