@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.EntityFrameworkCore
 {
-    public class FirebirdTestHelpers : TestHelpers
+    public class FbTestHelpers : TestHelpers
     {
-        protected FirebirdTestHelpers()
+        protected FbTestHelpers()
         {
         }
 
-        public static FirebirdTestHelpers Instance { get; } = new FirebirdTestHelpers();
+        public static FbTestHelpers Instance { get; } = new FbTestHelpers();
 
         public override IServiceCollection AddProviderServices(IServiceCollection services)
             => services.AddEntityFrameworkFirebird();

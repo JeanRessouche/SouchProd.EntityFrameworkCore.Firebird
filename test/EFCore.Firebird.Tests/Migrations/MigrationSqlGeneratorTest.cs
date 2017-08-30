@@ -25,7 +25,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
             get
             {
                 // type mapper
-                var typeMapper = new FirebirdTypeMapper(new RelationalTypeMapperDependencies());
+                var typeMapper = new FbTypeMapper(new RelationalTypeMapperDependencies());
 
                 // migrationsSqlGeneratorDependencies
                 var commandBuilderFactory = new RelationalCommandBuilderFactory(
@@ -44,11 +44,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
-                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
+                    new FbSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
                     , FirebirdOptions.Object),
                     typeMapper);
 
-                return new FirebirdMigrationsSqlGenerator(
+                return new FbMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
                     FirebirdOptions.Object);
 
@@ -62,7 +62,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     .Returns("s"
                     );*/
 
-                //return new FirebirdMigrationsSqlGenerator(
+                //return new FbMigrationsSqlGenerator(
                 //    migrationsSqlGeneratorDependencies,
                 //    FbOptions);
             }
@@ -275,7 +275,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 
         public virtual void CreateDatabaseOperation()
         {
-            Generate(new FirebirdCreateDatabaseOperation { Name = "Northwind" });
+            Generate(new FbCreateDatabaseOperation { Name = "Northwind" });
 
             Assert.Equal(
                 "CREATE SCHEMA  \"NORTHWIND\";" + EOL, Sql);
@@ -433,7 +433,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     ClrType = typeof(int),
                     ColumnType = "char(38)",
                     IsNullable = false,
-                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
+                    [FbAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                 });
 
             Assert.Equal(

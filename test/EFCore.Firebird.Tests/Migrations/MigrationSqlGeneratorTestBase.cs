@@ -44,7 +44,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     ClrType = typeof(DateTime),
                     ColumnType = "timestamp",
                     IsNullable = true,
-                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
+                    [FbAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                 });
         }
 
@@ -59,7 +59,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     ClrType = typeof(DateTime),
                     ColumnType = "timestamp",
                     IsNullable = true,
-                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.ComputedColumn
+                    [FbAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.ComputedColumn
                 });
         }
 
@@ -74,7 +74,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     ClrType = typeof(DateTime),
                     ColumnType = "timestamp",
                     IsNullable = true,
-                    [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.ComputedColumn
+                    [FbAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.ComputedColumn
                 });
         }
 
@@ -264,7 +264,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Table = "People",
                     Schema = "", // "dbo",
                     Columns = new[] { "FirstName", "LastName" },
-                    [FirebirdAnnotationNames.FullTextIndex] = "FULLTEXT"
+                    [FbAnnotationNames.FullTextIndex] = "FULLTEXT"
                 });
         }
 
@@ -278,7 +278,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     Table = "People",
                     Schema = "", // "dbo",
                     Columns = new[] { "FirstName", "LastName" },
-                    [FirebirdAnnotationNames.SpatialIndex] = "SPATIAL"
+                    [FbAnnotationNames.SpatialIndex] = "SPATIAL"
                 });
         }
 
@@ -383,7 +383,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                             ClrType = typeof(ulong),
                             ColumnType = "bigint",
                             IsNullable = false,
-                            [FirebirdAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
+                            [FbAnnotationNames.ValueGenerationStrategy] = FirebirdValueGenerationStrategy.IdentityColumn
                         }
                     },
                     PrimaryKey = new AddPrimaryKeyOperation
@@ -477,7 +477,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
         protected virtual void Generate(params MigrationOperation[] operation)
             => Generate(_ => { }, operation);
 
-        protected virtual ModelBuilder CreateModelBuilder() => FirebirdTestHelpers.Instance.CreateConventionBuilder();
+        protected virtual ModelBuilder CreateModelBuilder() => FbTestHelpers.Instance.CreateConventionBuilder();
 
         protected virtual void Generate(Action<ModelBuilder> buildAction, params MigrationOperation[] operation)
         {

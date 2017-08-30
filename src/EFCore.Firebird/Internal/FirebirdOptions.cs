@@ -17,14 +17,14 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Internal
 {
-    public class FirebirdOptions : IFirebirdOptions
+    public class FbOptions : IFirebirdOptions
     {
 
         private FbOptionsExtension _relationalOptions;
 
         private readonly Lazy<FbConnectionSettings> _lazyConnectionSettings;
 
-        public FirebirdOptions()
+        public FbOptions()
         {
             _lazyConnectionSettings = new Lazy<FbConnectionSettings>(() =>
             {

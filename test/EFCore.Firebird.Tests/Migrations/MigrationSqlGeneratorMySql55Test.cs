@@ -46,7 +46,7 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
 " )");
                 
                 // type mapper
-                var typeMapper = new FirebirdSmartTypeMapper(new RelationalTypeMapperDependencies(), FirebirdOptions.Object);
+                var typeMapper = new FbSmartTypeMapper(new RelationalTypeMapperDependencies(), FirebirdOptions.Object);
 
                 // migrationsSqlGeneratorDependencies
                 var commandBuilderFactory = new RelationalCommandBuilderFactory(
@@ -54,11 +54,11 @@ namespace SouchProd.EntityFrameworkCore.Firebird.Tests.Migrations
                     typeMapper);
                 var migrationsSqlGeneratorDependencies = new MigrationsSqlGeneratorDependencies(
                     commandBuilderFactory,
-                    new FirebirdSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
+                    new FbSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()
                     , FirebirdOptions.Object),
                     typeMapper);
                 
-                return new FirebirdMigrationsSqlGenerator(
+                return new FbMigrationsSqlGenerator(
                     migrationsSqlGeneratorDependencies,
                     FirebirdOptions.Object);
             }

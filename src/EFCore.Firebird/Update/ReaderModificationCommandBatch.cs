@@ -28,7 +28,7 @@ namespace Microsoft.EntityFrameworkCore.Update
     ///         This type is typically used by database providers; it is generally not used in application code.
     ///     </para>
     /// </summary>
-    public abstract class FirebirdReaderModificationCommandBatch : ModificationCommandBatch
+    public abstract class FbReaderModificationCommandBatch : ModificationCommandBatch
     {
         private readonly IRelationalCommandBuilderFactory _commandBuilderFactory;
         private readonly IRelationalValueBufferFactoryFactory _valueBufferFactoryFactory;
@@ -43,7 +43,7 @@ namespace Microsoft.EntityFrameworkCore.Update
         /// <param name="valueBufferFactoryFactory">
         ///     A factory for creating factories for creating <see cref="ValueBuffer" />s to be used when reading from the data reader.
         /// </param>
-        protected FirebirdReaderModificationCommandBatch(
+        protected FbReaderModificationCommandBatch(
             [NotNull] IRelationalCommandBuilderFactory commandBuilderFactory,
             [NotNull] ISqlGenerationHelper sqlGenerationHelper,
             [NotNull] IUpdateSqlGenerator updateSqlGenerator,
