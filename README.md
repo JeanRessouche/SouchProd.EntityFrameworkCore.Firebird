@@ -5,6 +5,8 @@
 
 # SouchProd.EntityFrameworkCore.Firebird
 
+:fire: :exclamation: **Warning ! This project is temporary and will be merged with [ralmsdeveloper reposit](https://github.com/ralmsdeveloper) to merge our efforts and finally see this provider integrated in the official FirebirdSQL organisation in a few weeks.**
+
 SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider built on top of the Firebird ADO.NET Data Provider. It enables use the Entity Framework Core 2.0 ORM with Firebird (2.x, 3.0) and Interbase.
 
 ## Status
