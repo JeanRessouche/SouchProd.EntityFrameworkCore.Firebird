@@ -1,6 +1,11 @@
-[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird) [![NuGet][main-nuget-badge]][main-nuget]  [![NuGet][pre-nuget-badge]][pre-nuget] [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
+[![Travis build status](https://img.shields.io/travis/souchprod/SouchProd.EntityFrameworkCore.Firebird.svg?label=build&branch=master)](https://travis-ci.org/souchprod/SouchProd.EntityFrameworkCore.Firebird)
+[![NuGet][main-nuget-badge]][main-nuget]
+[![NuGet][pre-nuget-badge]][pre-nuget]
+[![license](https://img.shields.io/apm/l/vim-mode.svg)](https://github.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/blob/master/LICENSE)
 
 # SouchProd.EntityFrameworkCore.Firebird
+
+:fire: :exclamation: **Warning ! This project is temporary and will be merged with [ralmsdeveloper reposit](https://github.com/ralmsdeveloper) to merge our efforts and finally see this provider integrated in the official FirebirdSQL organisation in a few weeks.**
 
 SouchProd.EntityFrameworkCore.Firebird is an Entity Framework Core provider built on top of the Firebird ADO.NET Data Provider. It enables use the Entity Framework Core 2.0 ORM with Firebird (2.x, 3.0) and Interbase.
 
@@ -73,4 +78,4 @@ This project couldn´t exist without the [.NET Firebird Client](https://github.c
 [main-nuget-badge]: https://img.shields.io/nuget/v/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget 
 
 [pre-nuget]: https://www.nuget.org/packages/SouchProd.EntityFrameworkCore.Firebird/
-[pre-nuget-badge]: https://img.shields.io/nuget/vpre/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget
+[pre-nuget-badge]: https://img.shields.io/nuget/vpre/SouchProd.EntityFrameworkCore.Firebird.svg?label=nuget%20pre-release
